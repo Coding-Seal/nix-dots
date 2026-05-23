@@ -83,8 +83,13 @@
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     noto-fonts
-    noto-fonts-emoji
+    noto-fonts-color-emoji
   ];
+
+  # ── VM guest (SPICE) ─────────────────────────────────────────────────────
+  # spice-vdagentd enables clipboard sharing, dynamic display resolution,
+  # and file transfer when running as a SPICE/QEMU VM guest.
+  services.spice-vdagentd.enable = true;
 
   # ── Swap ──────────────────────────────────────────────────────────────────
   # zram creates a compressed RAM disk used as swap — no disk partition needed,

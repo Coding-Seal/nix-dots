@@ -22,6 +22,19 @@ git remote add origin https://github.com/YOUR_USERNAME/nix-dots.git
 git push -u origin main
 ```
 
+### 1b. Wait for flake.lock to be generated
+
+After the push, GitHub Actions runs automatically and generates `flake.lock`
+(a file that pins all inputs to exact versions). **Do not skip this step** —
+without it, the live ISO has to download nixpkgs on its tiny RAM disk, which
+runs out of space.
+
+- Open your repo on GitHub → click the **Actions** tab
+- Wait for the "Generate flake.lock" job to go green (~2 minutes)
+- It will commit `flake.lock` back to the repo automatically
+
+If you want to trigger it manually: Actions → "Generate flake.lock" → Run workflow.
+
 ### 2. Edit your username in flake.nix
 
 Open [flake.nix](flake.nix) and change:
