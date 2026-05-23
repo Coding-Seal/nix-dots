@@ -14,9 +14,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, noctalia, ... }:
+  outputs = { self, nixpkgs, home-manager, noctalia, disko, ... }:
     let
       system = "x86_64-linux";
       # TODO: change this to your actual username (the one you set during NixOS install)
@@ -39,6 +43,8 @@
             };
           }
 
+          disko.nixosModules.disko
+          ./hosts/nixos/disko.nix
           ./hosts/nixos/default.nix
 
           # Home Manager as a NixOS module — one rebuild applies everything
