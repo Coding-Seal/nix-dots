@@ -1,5 +1,7 @@
 # Installation Guide
 
+This guide covers the **`nixos` VM target**. The `laptop` target follows the same steps — substitute `nixos` → `laptop` and `hosts/nixos/` → `hosts/laptop/` where appropriate.
+
 Two paths depending on your situation:
 
 - **[A] Fresh install from ISO** — boot NixOS ISO on the VM, let disko partition the disk, install everything in one shot
@@ -35,11 +37,11 @@ runs out of space.
 
 If you want to trigger it manually: Actions → "Generate flake.lock" → Run workflow.
 
-### 2. Edit your username in flake.nix
+### 2. Edit your username
 
-Open [flake.nix](flake.nix) and change:
+Open [modules/parts.nix](modules/parts.nix) and change:
 ```nix
-username = "nixos";  # ← change to whatever you want your username to be
+default = "nixos";  # ← change to whatever you want your username to be
 ```
 
 ### 3. Check your disk name
@@ -182,7 +184,7 @@ Noctalia launches automatically with Niri. On first run it shows a wizard — fo
 zsh    # try Zsh
 nu     # try Nushell
 ```
-To make one permanent, change `shell = pkgs.fish` to `shell = pkgs.zsh` or `shell = pkgs.nushell` in [hosts/nixos/default.nix](hosts/nixos/default.nix) and rebuild.
+To make one permanent, change `shell = pkgs.fish` to `shell = pkgs.zsh` or `shell = pkgs.nushell` in [modules/features/system.nix](modules/features/system.nix) and rebuild.
 
 ---
 
