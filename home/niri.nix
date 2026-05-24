@@ -1,12 +1,19 @@
 # Niri compositor configuration.
 # Niri is a scrollable tiling Wayland compositor — windows are arranged in
 # infinite horizontal columns. Mod is the Super/Windows key.
-{ ... }:
+{ username, ... }:
 
 {
   # xdg.configFile writes files into ~/.config/
   # "niri/config.kdl" → ~/.config/niri/config.kdl
   xdg.configFile."niri/config.kdl".text = ''
+    // ── Environment ──────────────────────────────────────────────────────────
+    // niri-session does not forward PATH into the systemd user session,
+    // so spawned apps can't find binaries without this.
+    environment {
+        PATH "/etc/profiles/per-user/${username}/bin:/run/current-system/sw/bin:/nix/var/nix/profiles/default/bin"
+    }
+
     // ── Input ────────────────────────────────────────────────────────────────
     input {
         keyboard {
