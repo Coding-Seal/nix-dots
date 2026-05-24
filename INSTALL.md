@@ -86,8 +86,9 @@ cd /tmp/nix-dots
 
 ### Step 4: Run the install script
 
-This handles flakes setup, disk partitioning (disko), and hardware config generation in one shot.
-Pass your HTTP proxy if downloads are hanging (common in VMs with no IPv6 route):
+This handles everything in one shot: disk partitioning, hardware config, NixOS install,
+and bootloader setup. Pass your HTTP proxy if downloads are hanging (common in VMs with
+no IPv6 route):
 
 ```bash
 # Without proxy:
@@ -99,37 +100,17 @@ export https_proxy=http://192.168.122.1:3128
 bash install.sh
 ```
 
-The script will show your disks, ask for confirmation before wiping, then print the
-`nixos-install` command to run next.
+The script will show your disks, ask for confirmation before wiping, then run everything
+through to completion. It prints the password and reboot commands at the end.
 
-### Step 5: Install NixOS
-
-```bash
-sudo nixos-install --flake /tmp/nix-dots#nixos --no-root-passwd
-```
-
-This will take a while on first run — it's downloading and building the full system.  
-`--no-root-passwd` skips setting a root password (you'll set your user password next).
-
-### Step 6: Install the bootloader
-
-`nixos-install` skips the EFI bootloader when it detects it's running in a chroot
-environment. Without this step the VM will not boot. Run it manually:
-
-```bash
-sudo nixos-enter --root /mnt -- bootctl install
-```
-
-You should see output ending with `New boot loader entry: NixOS`.
-
-### Step 7: Set your user password
+### Step 5: Set your user password
 
 ```bash
 # Replace "nixos" with your actual username
 sudo nixos-enter --root /mnt -c "passwd nixos"
 ```
 
-### Step 9: Reboot
+### Step 6: Reboot
 
 ```bash
 reboot

@@ -44,14 +44,21 @@ cp /mnt/etc/nixos/hardware-configuration.nix \
   "$REPO_DIR/hosts/nixos/hardware-configuration.nix"
 echo "    Saved to hosts/nixos/hardware-configuration.nix"
 
-# ── Done ──────────────────────────────────────────────────────────────────────
-INSTALL_CMD="sudo nixos-install --flake \"$REPO_DIR#nixos\" --no-root-passwd"
-for opt in "${NIX_OPTS[@]}"; do
-  INSTALL_CMD+=" $opt"
-done
+# ── Step 4: install NixOS ────────────────────────────────────────────────────
+echo ""
+echo "==> Installing NixOS..."
+sudo nixos-install --flake "$REPO_DIR#nixos" --no-root-passwd "${NIX_OPTS[@]}"
 
+# ── Step 5: install bootloader ───────────────────────────────────────────────
+# nixos-install skips bootctl when it detects a chroot environment.
 echo ""
-echo "All set. Run:"
+echo "==> Installing bootloader..."
+sudo nixos-enter --root /mnt -- bootctl install
+
+# ── Done ──────────────────────────────────────────────────────────────────────
 echo ""
-echo "  $INSTALL_CMD"
+echo "Done. Set your password, then reboot:"
+echo ""
+echo "  sudo nixos-enter --root /mnt -c 'passwd $(whoami)'"
+echo "  reboot"
 echo ""
