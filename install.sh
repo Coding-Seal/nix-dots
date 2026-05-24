@@ -49,11 +49,6 @@ echo ""
 echo "==> Installing NixOS..."
 sudo nixos-install --flake "$REPO_DIR#nixos" --no-root-passwd "${NIX_OPTS[@]}"
 
-# ── Step 5: install bootloader ───────────────────────────────────────────────
-# nixos-install skips bootctl when it detects a chroot environment.
-echo ""
-echo "==> Installing bootloader..."
-sudo nixos-enter --root /mnt -- bootctl install
 
 # ── Done ──────────────────────────────────────────────────────────────────────
 echo ""
