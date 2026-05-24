@@ -77,67 +77,32 @@ iwctl
   quit
 ```
 
-### Step 3: Enable flakes in the live environment
-
-The ISO ships with old-style Nix. This one-liner enables flakes for this session:
-
-```bash
-export NIX_CONFIG="experimental-features = nix-command flakes"
-```
-
-### Step 4: Clone the repo
+### Step 3: Clone the repo
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/nix-dots.git /tmp/nix-dots
 cd /tmp/nix-dots
 ```
 
-### Step 5: Run disko
+### Step 4: Run the install script
 
-This **wipes** the disk and creates the Btrfs layout. Double-check the disk name first:
-
-```bash
-lsblk   # confirm your disk is /dev/vda (or /dev/sda)
-```
-
-Then run disko — it will partition, format, and mount everything to `/mnt`:
+This handles flakes setup, disk partitioning (disko), and hardware config generation in one shot.
+Pass your HTTP proxy if downloads are hanging (common in VMs with no IPv6 route):
 
 ```bash
-sudo nix run github:nix-community/disko/latest -- \
-  --mode disko \
-  hosts/nixos/disko.nix
+# Without proxy:
+bash install.sh
+
+# With proxy (replace host/port with yours):
+export http_proxy=http://192.168.122.1:3128
+export https_proxy=http://192.168.122.1:3128
+bash install.sh
 ```
 
-When it finishes, verify with:
-```bash
-mount | grep /mnt   # should show /mnt, /mnt/home, /mnt/nix, etc.
-```
+The script will show your disks, ask for confirmation before wiping, then print the
+`nixos-install` command to run next.
 
-### Step 6: Generate hardware configuration
-
-This detects your VM's hardware (CPU, kernel modules, etc.).
-`--no-filesystems` tells it to skip mount points — disko already handles those.
-
-```bash
-sudo nixos-generate-config --no-filesystems --root /mnt
-```
-
-Copy the result into your repo:
-
-```bash
-cp /mnt/etc/nixos/hardware-configuration.nix hosts/nixos/hardware-configuration.nix
-```
-
-Open the file and check it looks reasonable (it should have `boot.initrd.availableKernelModules`, etc.).
-Then commit and push:
-
-```bash
-git add hosts/nixos/hardware-configuration.nix
-git commit -m "add hardware configuration"
-git push
-```
-
-### Step 7: Install NixOS
+### Step 5: Install NixOS
 
 ```bash
 sudo nixos-install --flake /tmp/nix-dots#nixos --no-root-passwd
