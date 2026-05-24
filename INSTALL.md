@@ -111,7 +111,18 @@ sudo nixos-install --flake /tmp/nix-dots#nixos --no-root-passwd
 This will take a while on first run — it's downloading and building the full system.  
 `--no-root-passwd` skips setting a root password (you'll set your user password next).
 
-### Step 8: Set your user password
+### Step 6: Install the bootloader
+
+`nixos-install` skips the EFI bootloader when it detects it's running in a chroot
+environment. Without this step the VM will not boot. Run it manually:
+
+```bash
+sudo nixos-enter --root /mnt -- bootctl install
+```
+
+You should see output ending with `New boot loader entry: NixOS`.
+
+### Step 7: Set your user password
 
 ```bash
 # Replace "nixos" with your actual username
