@@ -13,6 +13,8 @@
   # ── Networking ────────────────────────────────────────────────────────────
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
+  networking.proxy.default = "http://192.168.122.1:2081";
+  networking.proxy.noProxy = "127.0.0.1,localhost";
 
   # ── Locale & time ─────────────────────────────────────────────────────────
   # TODO: change to your timezone — run `timedatectl list-timezones` to find yours

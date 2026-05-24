@@ -23,6 +23,8 @@
     # Launcher (open with Mod+D in Niri)
     fuzzel
 
+    git
+
     # Modern CLI replacements
     ripgrep   # fast grep (also used by Neovim)
     fd        # fast find (also used by Neovim)
