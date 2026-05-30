@@ -4,7 +4,9 @@
     ({ pkgs, ... }: {
       home.packages = with pkgs; [
         git
-        fuzzel
+        claude-code
+        zed-editor
+        yazi
         ripgrep
         fd
         bat

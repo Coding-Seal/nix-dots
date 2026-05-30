@@ -40,17 +40,45 @@
       }
 
       # VM-specific overrides
-      {
+      ({ pkgs, ... }: {
         networking.hostName = "nixos";
         networking.proxy.default = "http://192.168.122.1:2081";
         networking.proxy.noProxy = "127.0.0.1,localhost";
+
         services.spice-vdagentd.enable = true;
+
+        # The nixpkgs spice-vdagent is X11-only (no Wayland clipboard protocol support).
+        # xwayland-satellite provides rootless XWayland so spice-vdagent can connect
+        # to an X11 display; xwayland-satellite then bridges the clipboard to Wayland.
+        systemd.user.services.xwayland-satellite = {
+          description = "Rootless XWayland (for spice-vdagent clipboard)";
+          after = [ "graphical-session.target" ];
+          partOf = [ "graphical-session.target" ];
+          wantedBy = [ "graphical-session.target" ];
+          serviceConfig = {
+            ExecStart = "${pkgs.xwayland-satellite}/bin/xwayland-satellite :0";
+            Restart = "on-failure";
+          };
+        };
+
+        systemd.user.services.spice-vdagent = {
+          description = "SPICE vdagent (clipboard + resize)";
+          after = [ "graphical-session.target" "xwayland-satellite.service" ];
+          partOf = [ "graphical-session.target" ];
+          wantedBy = [ "graphical-session.target" ];
+          environment.DISPLAY = ":0";
+          serviceConfig = {
+            ExecStart = "${pkgs.spice-vdagent}/bin/spice-vdagent";
+            Restart = "on-failure";
+            RestartSec = "2";
+          };
+        };
 
         # Load the DRM driver for the VM's GPU so niri can find /dev/dri/card0.
         # QXL is the default for SPICE/KVM VMs; virtio-gpu is used when the VM
         # display adapter is set to "Virtio" in virt-manager.
         boot.kernelModules = [ "qxl" "virtio-gpu" ];
-      }
+      })
     ] ++ config.nixosModules;
   };
 }

@@ -17,6 +17,7 @@ in
       # PATH into the systemd user session, so binaries aren't found otherwise.
       environment.PATH =
         "/etc/profiles/per-user/${username}/bin"
+        + ":/run/wrappers/bin"
         + ":/run/current-system/sw/bin"
         + ":/nix/var/nix/profiles/default/bin";
 
@@ -50,7 +51,7 @@ in
 
       binds = {
         "Mod+Return".spawn = config.terminal;
-        "Mod+D".spawn = "fuzzel";
+        "Mod+D".spawn-sh = "qs -c noctalia-shell ipc call launcher toggle";
         "Mod+B".spawn = "firefox";
 
         "Mod+Q".close-window = null;
