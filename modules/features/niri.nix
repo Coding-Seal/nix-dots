@@ -6,7 +6,11 @@ in
 {
   # Custom wrapper module — defines niri options and settings.
   # Imported when building the wrapped package below.
-  config.flake.wrappersModules.niri = { config, lib, ... }: {
+  config.flake.wrappersModules.niri = { config, lib, ... }:
+  let
+    noctaliaExe = lib.getExe inputs.noctalia.packages.${config.pkgs.stdenv.hostPlatform.system}.default;
+  in
+  {
     options.terminal = lib.mkOption {
       type = lib.types.str;
       default = "wezterm";
@@ -43,6 +47,11 @@ in
         gaps = 12;
         center-focused-column = "never";
         default-column-width.proportion = 0.5;
+        preset-column-widths = [
+          { proportion = 0.33333; }
+          { proportion = 0.5; }
+          { proportion = 0.66667; }
+        ];
 
         focus-ring = {
           width = 2;
@@ -53,7 +62,7 @@ in
 
       binds = {
         "Mod+Return".spawn = config.terminal;
-        "Mod+D".spawn-sh = "qs -c noctalia-shell ipc call launcher toggle";
+        "Mod+D".spawn-sh = "${noctaliaExe} ipc call launcher toggle";
         "Mod+B".spawn = "firefox";
 
         "Mod+Q".close-window = _: {};
@@ -117,14 +126,21 @@ in
         "XF86AudioNext".spawn-sh = "playerctl next";
         "XF86AudioPrev".spawn-sh = "playerctl previous";
 
+        "Mod+Shift+Slash".show-hotkey-overlay = _: {};
+
         "Mod+Shift+E".quit = _: {};
+
+        "Mod+R".switch-preset-column-width = _: {};
+        "Mod+E".spawn-sh = "wezterm start -- yazi";
+        "Mod+Comma".consume-window-into-column = _: {};
+        "Mod+Period".expel-window-from-column = _: {};
       };
 
       workspaces = let s = { layout.gaps = 12; }; in {
         "w0" = s; "w1" = s; "w2" = s; "w3" = s; "w4" = s;
       };
 
-      spawn-at-startup = [ "noctalia-shell" ];
+      spawn-at-startup = [ noctaliaExe ];
     };
   };
 
