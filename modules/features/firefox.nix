@@ -1,6 +1,11 @@
 { ... }:
 {
   config.hmModules = [
-    { programs.firefox.enable = true; }
+    {
+      programs.firefox = {
+        enable = true;
+        configPath = ".mozilla/firefox";
+      };
+    }
   ];
 }

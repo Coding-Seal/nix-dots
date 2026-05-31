@@ -12,6 +12,8 @@ in
       default = "wezterm";
     };
 
+    config.v2-settings = true;
+
     config.settings = {
       # Fix PATH for apps spawned by niri — niri-session doesn't forward
       # PATH into the systemd user session, so binaries aren't found otherwise.
@@ -21,7 +23,7 @@ in
         + ":/run/current-system/sw/bin"
         + ":/nix/var/nix/profiles/default/bin";
 
-      prefer-no-csd = null;
+      prefer-no-csd = _: {};
 
       input = {
         keyboard = {
@@ -30,9 +32,9 @@ in
           repeat-delay = 250;
         };
         touchpad = {
-          tap = null;
-          natural-scroll = null;
-          dwt = null;
+          tap = _: {};
+          natural-scroll = _: {};
+          dwt = _: {};
         };
         mouse.accel-profile = "flat";
       };
@@ -54,26 +56,26 @@ in
         "Mod+D".spawn-sh = "qs -c noctalia-shell ipc call launcher toggle";
         "Mod+B".spawn = "firefox";
 
-        "Mod+Q".close-window = null;
-        "Mod+F".fullscreen-window = null;
-        "Mod+Shift+F".toggle-window-floating = null;
-        "Mod+C".center-column = null;
+        "Mod+Q".close-window = _: {};
+        "Mod+F".fullscreen-window = _: {};
+        "Mod+Shift+F".toggle-window-floating = _: {};
+        "Mod+C".center-column = _: {};
 
-        "Mod+H".focus-column-left = null;
-        "Mod+L".focus-column-right = null;
-        "Mod+J".focus-window-down = null;
-        "Mod+K".focus-window-up = null;
-        "Mod+Left".focus-column-left = null;
-        "Mod+Right".focus-column-right = null;
-        "Mod+Down".focus-window-down = null;
-        "Mod+Up".focus-window-up = null;
+        "Mod+H".focus-column-left = _: {};
+        "Mod+L".focus-column-right = _: {};
+        "Mod+J".focus-window-down = _: {};
+        "Mod+K".focus-window-up = _: {};
+        "Mod+Left".focus-column-left = _: {};
+        "Mod+Right".focus-column-right = _: {};
+        "Mod+Down".focus-window-down = _: {};
+        "Mod+Up".focus-window-up = _: {};
 
-        "Mod+Shift+H".move-column-left = null;
-        "Mod+Shift+L".move-column-right = null;
-        "Mod+Shift+J".move-window-down = null;
-        "Mod+Shift+K".move-window-up = null;
-        "Mod+Shift+Left".move-column-left = null;
-        "Mod+Shift+Right".move-column-right = null;
+        "Mod+Shift+H".move-column-left = _: {};
+        "Mod+Shift+L".move-column-right = _: {};
+        "Mod+Shift+J".move-window-down = _: {};
+        "Mod+Shift+K".move-window-up = _: {};
+        "Mod+Shift+Left".move-column-left = _: {};
+        "Mod+Shift+Right".move-column-right = _: {};
 
         "Mod+Ctrl+H".set-column-width = "-5%";
         "Mod+Ctrl+L".set-column-width = "+5%";
@@ -92,17 +94,17 @@ in
         "Mod+Shift+4".move-column-to-workspace = "w3";
         "Mod+Shift+5".move-column-to-workspace = "w4";
 
-        "Mod+Tab".focus-workspace-down = null;
-        "Mod+Shift+Tab".focus-workspace-up = null;
+        "Mod+Tab".focus-workspace-down = _: {};
+        "Mod+Shift+Tab".focus-workspace-up = _: {};
 
-        "Mod+WheelScrollDown".focus-column-left = null;
-        "Mod+WheelScrollUp".focus-column-right = null;
-        "Mod+Ctrl+WheelScrollDown".focus-workspace-down = null;
-        "Mod+Ctrl+WheelScrollUp".focus-workspace-up = null;
+        "Mod+WheelScrollDown".focus-column-left = _: {};
+        "Mod+WheelScrollUp".focus-column-right = _: {};
+        "Mod+Ctrl+WheelScrollDown".focus-workspace-down = _: {};
+        "Mod+Ctrl+WheelScrollUp".focus-workspace-up = _: {};
 
-        "Print".screenshot = null;
-        "Ctrl+Print".screenshot-screen = null;
-        "Alt+Print".screenshot-window = null;
+        "Print".screenshot = _: {};
+        "Ctrl+Print".screenshot-screen = _: {};
+        "Alt+Print".screenshot-window = _: {};
 
         "XF86AudioRaiseVolume".spawn-sh = "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%+";
         "XF86AudioLowerVolume".spawn-sh = "wpctl set-volume -l 1.4 @DEFAULT_AUDIO_SINK@ 5%-";
@@ -115,7 +117,7 @@ in
         "XF86AudioNext".spawn-sh = "playerctl next";
         "XF86AudioPrev".spawn-sh = "playerctl previous";
 
-        "Mod+Shift+E".quit = null;
+        "Mod+Shift+E".quit = _: {};
       };
 
       workspaces = let s = { layout.gaps = 12; }; in {
@@ -139,7 +141,7 @@ in
     ({ pkgs, ... }: {
       programs.niri = {
         enable = true;
-        package = self.packages.${pkgs.system}.niri;
+        package = self.packages.${pkgs.stdenv.hostPlatform.system}.niri;
       };
       programs.fish.enable = true;
     })
