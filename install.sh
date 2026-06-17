@@ -18,7 +18,7 @@ PROXY="${http_proxy:-${https_proxy:-}}"
 echo "Current block devices:"
 lsblk
 echo ""
-echo "disko will WIPE the disk configured in hosts/nixos/disko.nix."
+echo "disko will WIPE the disk configured in hosts/laptop/disko.nix."
 read -rp "Continue? [y/N] " confirm
 [[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
 
@@ -30,7 +30,7 @@ sudo nix run \
   "${NIX_OPTS[@]}" \
   github:nix-community/disko/latest -- \
   --mode disko \
-  "$REPO_DIR/hosts/nixos/disko.nix"
+  "$REPO_DIR/hosts/laptop/disko.nix"
 
 echo ""
 echo "Mounts:"
@@ -41,13 +41,13 @@ echo ""
 echo "==> Generating hardware configuration..."
 sudo nixos-generate-config --no-filesystems --root /mnt
 cp /mnt/etc/nixos/hardware-configuration.nix \
-  "$REPO_DIR/hosts/nixos/hardware-configuration.nix"
-echo "    Saved to hosts/nixos/hardware-configuration.nix"
+  "$REPO_DIR/hosts/laptop/hardware-configuration.nix"
+echo "    Saved to hosts/laptop/hardware-configuration.nix"
 
 # ── Step 4: install NixOS ────────────────────────────────────────────────────
 echo ""
 echo "==> Installing NixOS..."
-sudo nixos-install --flake "$REPO_DIR#nixos" --no-root-passwd "${NIX_OPTS[@]}"
+sudo nixos-install --flake "$REPO_DIR#laptop" --no-root-passwd "${NIX_OPTS[@]}"
 
 
 # ── Done ──────────────────────────────────────────────────────────────────────
