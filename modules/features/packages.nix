@@ -6,7 +6,6 @@
         (pkgs.callPackage ../../pkgs/rtk.nix { })
         git
         claude-code
-        zed-editor
         yazi
         ripgrep
         fd

@@ -1,15 +1,7 @@
-{ config, inputs, self, ... }:
+{ inputs, self, ... }:
 
-let
-  username = config.username;
-in
 {
-  # Custom wrapper module — defines niri options and settings.
-  # Imported when building the wrapped package below.
   config.flake.wrappersModules.niri = { config, lib, ... }:
-  let
-    noctaliaExe = lib.getExe inputs.noctalia.packages.${config.pkgs.stdenv.hostPlatform.system}.default;
-  in
   {
     options.terminal = lib.mkOption {
       type = lib.types.str;
@@ -19,19 +11,14 @@ in
     config.v2-settings = true;
 
     config.settings = {
-      # Fix PATH for apps spawned by niri — niri-session doesn't forward
-      # PATH into the systemd user session, so binaries aren't found otherwise.
-      environment.PATH =
-        "/etc/profiles/per-user/${username}/bin"
-        + ":/run/wrappers/bin"
-        + ":/run/current-system/sw/bin"
-        + ":/nix/var/nix/profiles/default/bin";
-
       prefer-no-csd = _: {};
 
       input = {
         keyboard = {
-          xkb.layout = "us";
+          xkb = {
+            layout = "us,ru";
+            options = "grp:alt_shift_toggle";
+          };
           repeat-rate = 40;
           repeat-delay = 250;
         };
@@ -62,7 +49,7 @@ in
 
       binds = {
         "Mod+Return".spawn = config.terminal;
-        "Mod+D".spawn-sh = "${noctaliaExe} ipc call launcher toggle";
+        "Mod+D".spawn-sh = "noctalia msg panel-toggle launcher";
         "Mod+B".spawn = "firefox";
 
         "Mod+Q".close-window = _: {};
@@ -140,7 +127,14 @@ in
         "w0" = s; "w1" = s; "w2" = s; "w3" = s; "w4" = s;
       };
 
-      spawn-at-startup = [ noctaliaExe ];
+      window-rules = [
+        {
+          matches = [ { app-id = "^zoom$"; } ];
+          open-floating = true;
+        }
+      ];
+
+      spawn-at-startup = [ "noctalia" ];
     };
   };
 
@@ -160,6 +154,11 @@ in
         package = self.packages.${pkgs.stdenv.hostPlatform.system}.niri;
       };
       programs.fish.enable = true;
+
+      # niri (>=25.08) auto-spawns XWayland on demand via xwayland-satellite
+      # when an X11-only app (e.g. Zoom) connects — it just needs the binary
+      # on PATH, no manual systemd unit or $DISPLAY wiring required.
+      environment.systemPackages = [ pkgs.xwayland-satellite ];
     })
   ];
 }

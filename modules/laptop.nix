@@ -41,6 +41,8 @@
       # Laptop-specific settings
       {
         networking.hostName = "laptop";
+        networking.proxy.default = "socks4://192.168.1.143:1080";
+        networking.proxy.noProxy = "127.0.0.1,localhost";
       }
     ] ++ config.nixosModules;
   };

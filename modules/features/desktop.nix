@@ -1,16 +1,11 @@
-{ ... }:
+{ inputs, ... }:
 {
   config.nixosModules = [
+    inputs.noctalia-greeter.nixosModules.default
     ({ pkgs, ... }: {
-      hardware.graphics.enable = true;
+      programs.noctalia-greeter.enable = true;
 
-      services.greetd = {
-        enable = true;
-        settings.default_session = {
-          command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd niri-session";
-          user = "greeter";
-        };
-      };
+      hardware.graphics.enable = true;
 
       services.pipewire = {
         enable = true;
@@ -28,7 +23,11 @@
           xdg-desktop-portal-gnome
           xdg-desktop-portal-gtk
         ];
-        config.common.default = "gnome";
+        # gnome implements the Mutter-style ScreenCast/RemoteDesktop DBus API that
+        # niri speaks, so it must come first for screen sharing (Telegram, Zoom)
+        # to work; gtk is the fallback for interfaces gnome doesn't implement
+        # (e.g. FileChooser).
+        config.common.default = [ "gnome" "gtk" ];
       };
 
       fonts.packages = with pkgs; [
