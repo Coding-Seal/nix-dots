@@ -3,8 +3,9 @@
   config.hmModules = [
     ({ pkgs, ... }: {
       home.packages = with pkgs; [
-        (pkgs.callPackage ../../pkgs/rtk.nix { })
+        (pkgs.callPackage ../../../pkgs/rtk.nix { })
         git
+        gh
         claude-code
         yazi
         ripgrep

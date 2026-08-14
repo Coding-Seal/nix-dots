@@ -16,16 +16,8 @@
         };
       };
 
-      xdg.mimeApps = {
-        enable = true;
-        defaultApplications = {
-          "text/html"               = "firefox.desktop";
-          "x-scheme-handler/http"   = "firefox.desktop";
-          "x-scheme-handler/https"  = "firefox.desktop";
-          "x-scheme-handler/about"  = "firefox.desktop";
-          "x-scheme-handler/unknown" = "firefox.desktop";
-        };
-      };
+      # Stylix's firefox target can't discover profile names on its own.
+      stylix.targets.firefox.profileNames = [ "default" ];
     })
   ];
 }

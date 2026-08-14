@@ -17,6 +17,9 @@
       hardware.bluetooth.powerOnBoot = true;
       services.blueman.enable = true;
 
+      services.power-profiles-daemon.enable = true;
+      services.upower.enable = true;
+
       xdg.portal = {
         enable = true;
         extraPortals = with pkgs; [

@@ -4,7 +4,7 @@
 
 Declarative NixOS configuration for a personal workstation. Everything is reproducible — rebuilding from scratch should produce the same system.
 
-**Stack**: Niri (Wayland WM) · Noctalia (desktop shell — panels, dock, notifications) · WezTerm · Neovim (LazyVim) · Firefox
+**Stack**: Niri (Wayland WM) · Noctalia (desktop shell — panels, dock, notifications) · Stylix (system-wide app theming) · WezTerm · Neovim (LazyVim) · Firefox
 
 **Hosts**: `nixos` (VM) · `laptop` (stub — hardware config pending)
 
@@ -66,16 +66,27 @@ modules/
   nixos.nix                 # assembles nixosConfigurations.nixos (VM)
   laptop.nix                # assembles nixosConfigurations.laptop (stub)
   features/
-    system.nix              # boot, users, security, swap
-    networking.nix          # networkmanager (hostname/proxy stay in host configs)
-    desktop.nix             # greetd, pipewire, bluetooth, portals, fonts
-    niri.nix                # programs.niri (NixOS) + niri KDL config (HM)
-    shells.nix              # fish, zsh, nushell, starship (HM)
-    wezterm.nix             # wezterm (HM)
-    nvim.nix                # neovim + packages (HM)
-    firefox.nix             # firefox (HM)
-    noctalia.nix            # noctalia-shell (HM)
-    packages.nix            # home.packages CLI tools (HM)
+    system/
+      system.nix            # boot, users, security, swap
+      networking.nix        # networkmanager (hostname/proxy stay in host configs)
+    desktop/
+      desktop.nix           # greeter, pipewire, bluetooth, portals, fonts
+      niri.nix              # programs.niri (NixOS) + niri KDL config (HM)
+      noctalia.nix          # programs.noctalia (NixOS + HM) — palette derived from Stylix, see Theming below
+      stylix.nix            # system-wide theming: base16 scheme, polarity (NixOS, cascades to HM)
+      theming.nix           # dconf + GTK/Qt support packages Stylix's targets need at runtime
+    apps/
+      browsers/
+        firefox.nix         # firefox (HM) — themed via Stylix's firefox target
+        chrome.nix          # google-chrome (HM)
+        zen-browser.nix     # zen-browser flake's programs.zen-browser module (HM) — themed via Stylix
+      wezterm.nix           # wezterm (HM) — colors/fonts owned by Stylix's wezterm target
+      zed.nix               # zed-editor (HM) — themed via Stylix's zed target
+      communication.nix     # telegram, zoom (HM) — no Stylix target exists for either
+    shell/
+      shells.nix            # fish, zsh, nushell, starship (HM)
+      packages.nix          # home.packages CLI tools (HM)
+      devenv.nix            # devenv + direnv (HM)
 hosts/
   nixos/
     disko.nix               # disk layout for VM (/dev/vda, Btrfs subvolumes)
@@ -260,8 +271,28 @@ Three shells are configured; Fish is the login shell. To switch default, change 
 
 ## Noctalia notes
 
-Noctalia has its own flake input in `flake.nix`. Its HM module is `inputs.noctalia.homeModules.default`, wired in `modules/features/noctalia.nix`.
+Noctalia has its own flake input in `flake.nix`. Its HM module is `inputs.noctalia.homeModules.default`, wired in `modules/features/desktop/noctalia.nix`. The real (locked) HM option namespace is `programs.noctalia` — not `programs.noctalia-shell`, which is a deprecated v4 module that also exists upstream. Don't trust cached/stale nix store copies when checking option names; resolve the actual locked input (`nix eval --impure --expr '(builtins.getFlake (toString ./.)).inputs.noctalia.outPath'`) and read `nix/home-module.nix` from there.
 
-Required system services are declared in `modules/features/desktop.nix` (bluetooth, pipewire, portals) and `modules/features/networking.nix` (networkmanager).
+Required system services are declared in `modules/features/desktop/desktop.nix` (bluetooth, pipewire, portals) and `modules/features/system/networking.nix` (networkmanager).
 
 Use the Cachix cache to avoid compiling Quickshell locally — cache settings live inline in each host config file (`modules/nixos.nix`, `modules/laptop.nix`).
+
+---
+
+## Theming: Stylix is the source of truth
+
+App color theming flows from **Stylix**, not from Noctalia's own template engine. `modules/features/desktop/stylix.nix` sets `stylix.enable`, `polarity`, and `base16Scheme` at the NixOS level; because it imports `inputs.stylix.nixosModules.stylix` (not just the HM module), Stylix auto-injects itself into home-manager via `home-manager.sharedModules` and cascades those three values to every HM user automatically — no separate wiring needed per host.
+
+- **Noctalia's palette is derived from Stylix**, not picked independently. Stylix's `noctalia` target writes `programs.noctalia.customPalettes.stylix` from the active base16 scheme and points `programs.noctalia.settings.theme` at it. Don't re-enable Noctalia's own `theme.templates.builtin_ids` for `gtk3`/`gtk4`/`qt`/`kcolorscheme` — Stylix's `gtk`/`qt` targets nix-manage those exact same file paths (`gtk-3.0/gtk.css`, etc.), so both writing to them will fight.
+- **`modules/features/desktop/theming.nix`** only carries what Stylix's targets still need at the system level (`programs.dconf.enable`) plus unrelated manual tools (`nwg-look`, `gsettings-desktop-schemas`). Don't add `adw-gtk3`/`qt6ct` back — Stylix's gtk/qt targets install those declaratively themselves (`gtk.theme.package`, `qt.platformTheme.name`).
+- **Some Stylix targets need explicit config to activate**, they don't all just work from `autoEnable`:
+  - `stylix.targets.firefox.profileNames` / `stylix.targets.zen-browser.profileNames` must list your HM profile names (e.g. `[ "default" ]`) — these targets can't discover profile names on their own and silently no-op without it (surfaces as an `evaluation warning`, not an error).
+  - The zen-browser target additionally requires the `programs.zen-browser` HM option namespace to exist at all — a raw `home.packages` install of the browser (no HM module) doesn't trigger it. Use the zen-browser flake's own HM module (`inputs.zen-browser.homeModules.default`), which mirrors home-manager's built-in firefox module.
+- **WezTerm**: `apps/wezterm.nix` uses `programs.wezterm.settings` (structured attrs), not `extraConfig`. This is required, not stylistic — once any module (Stylix's wezterm target included) also sets `programs.wezterm.settings`, home-manager stops inlining `extraConfig` directly and instead wraps it in a function; a self-contained `local config = wezterm.config_builder(); ...; return config` extraConfig would silently become dead code (mutating a shadowed local, its `return` discarded) with no error.
+- **No Stylix target exists** for Telegram, Zoom, or (as a full app-theming target) Chrome — Chrome only gets a lightweight `programs.chromium` browser-theme-color policy, not real CSS-level theming.
+
+---
+
+## Gotcha: `nix eval`/flake commands only see git-tracked files
+
+New files invisible to `nix eval .#...` / `nixos-rebuild` (producing confusing "option does not exist" errors that look like real config bugs) almost always mean the file is untracked. Local flake evaluation resolves through the git working tree, which includes uncommitted *modifications to tracked files* but excludes brand-new *untracked* files entirely. Run `git add` on new files before evaluating/building, even before committing.

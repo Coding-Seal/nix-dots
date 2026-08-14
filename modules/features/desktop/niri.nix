@@ -13,6 +13,10 @@
     config.settings = {
       prefer-no-csd = _: {};
 
+      environment = {
+        QT_QPA_PLATFORMTHEME = "qt6ct";
+      };
+
       input = {
         keyboard = {
           xkb = {
