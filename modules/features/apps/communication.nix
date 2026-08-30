@@ -1,5 +1,4 @@
-{ ... }:
-{
+_: {
   config.hmModules = [
     ({ pkgs, ... }: {
       home.packages = with pkgs; [

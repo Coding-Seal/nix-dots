@@ -1,0 +1,7 @@
+disabled = []
+ignore = [
+  ".direnv",
+  ".devenv",
+  # nixos-generate-config output, explicitly marked "do not modify"
+  "hosts/*/hardware-configuration.nix",
+]

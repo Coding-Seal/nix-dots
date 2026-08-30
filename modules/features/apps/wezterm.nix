@@ -1,5 +1,4 @@
-{ ... }:
-{
+_: {
   config.hmModules = [
     {
       # font/color_scheme are left to Stylix's wezterm target (modules/features/desktop/stylix.nix).

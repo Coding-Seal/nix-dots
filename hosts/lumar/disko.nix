@@ -12,12 +12,16 @@
 # TODO: verify the disk name with `lsblk` on the laptop.
 #   NVMe drives  → /dev/nvme0n1
 #   SATA/USB SSD → /dev/sda
-{ ... }:
+_:
 
 let
   disk = "/dev/nvme0n1";
 
-  btrfsOpts = [ "compress=zstd" "noatime" "space_cache=v2" ];
+  btrfsOpts = [
+    "compress=zstd"
+    "noatime"
+    "space_cache=v2"
+  ];
 in
 {
   disko.devices = {
@@ -43,7 +47,10 @@ in
             size = "100%";
             content = {
               type = "btrfs";
-              extraArgs = [ "-L" "nixos" ];
+              extraArgs = [
+                "-L"
+                "nixos"
+              ];
               subvolumes = {
                 "@" = {
                   mountpoint = "/";

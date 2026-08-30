@@ -1,4 +1,4 @@
-{ ... }:
+{ config, ... }:
 {
   config.hmModules = [
     ({ pkgs, ... }: {
@@ -26,7 +26,11 @@
         pavucontrol
         quickshell
         nerd-fonts.jetbrains-mono
+        nh
       ];
+
+      # nh needs to know which flake to operate on by default
+      home.sessionVariables.NH_FLAKE = "/home/${config.username}/nix-dots";
 
       # Override yazi's desktop entry so launchers open it in a terminal
       xdg.desktopEntries.yazi = {
@@ -34,7 +38,11 @@
         exec = "wezterm start -- yazi %f";
         terminal = false;
         icon = "yazi";
-        categories = [ "System" "FileManager" "FileTools" ];
+        categories = [
+          "System"
+          "FileManager"
+          "FileTools"
+        ];
         mimeType = [ "inode/directory" ];
       };
     })

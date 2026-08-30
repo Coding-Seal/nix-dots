@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide covers the **`nixos` VM target**. The `laptop` target follows the same steps — substitute `nixos` → `laptop` and `hosts/nixos/` → `hosts/laptop/` where appropriate.
+This guide covers the **`taldain` VM target**. The `lumar` (home laptop) and `scadrial` (work laptop) targets follow the same steps — substitute `taldain` → `lumar`/`scadrial` and `hosts/taldain/` → `hosts/lumar/`/`hosts/scadrial/` where appropriate.
 
 Two paths depending on your situation:
 
@@ -49,7 +49,7 @@ default = "nixos";  # ← change to whatever you want your username to be
 The disko config assumes `/dev/vda` (QEMU/KVM VMs).  
 If you use VirtualBox or VMware it's likely `/dev/sda`.
 
-Open [hosts/nixos/disko.nix](hosts/nixos/disko.nix) and update:
+Open [hosts/taldain/disko.nix](hosts/taldain/disko.nix) and update:
 ```nix
 disk = "/dev/vda";  # ← check with `lsblk` on the VM
 ```
@@ -139,7 +139,7 @@ cd ~/nix-dots
 
 ```bash
 sudo nixos-generate-config --show-hardware-config \
-  > hosts/nixos/hardware-configuration.nix
+  > hosts/taldain/hardware-configuration.nix
 ```
 
 ### Step 3: Enable flakes (if not already)
@@ -156,7 +156,7 @@ Then apply: `sudo nixos-rebuild switch`
 
 ```bash
 cd ~/nix-dots
-sudo nixos-rebuild switch --flake .#nixos
+sudo nixos-rebuild switch --flake .#taldain
 ```
 
 > **Note on disko:** When applied to an already-running system, the disko module
@@ -192,13 +192,13 @@ To make one permanent, change `shell = pkgs.fish` to `shell = pkgs.zsh` or `shel
 
 ```bash
 # Apply config changes
-sudo nixos-rebuild switch --flake ~/nix-dots#nixos
+sudo nixos-rebuild switch --flake ~/nix-dots#taldain
 
 # Roll back if something breaks
 sudo nixos-rebuild switch --rollback
 
 # Update all packages
-cd ~/nix-dots && nix flake update && sudo nixos-rebuild switch --flake .#nixos
+cd ~/nix-dots && nix flake update && sudo nixos-rebuild switch --flake .#taldain
 
 # List generations (previous system states you can roll back to)
 sudo nix-env --list-generations --profile /nix/var/nix/profiles/system

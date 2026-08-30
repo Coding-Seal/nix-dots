@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Evaluate host configurations
+        run: |
+          for host in taldain lumar scadrial; do
+            echo "== $host =="
+            nix eval ".#nixosConfigurations.$host.config.system.build.toplevel.drvPath"
+          done
+
+      - name: Format check
+        run: nix run nixpkgs#nixfmt -- --check $(find . -name '*.nix')
+
+      - name: Lint (statix)
+        run: nix run nixpkgs#statix -- check .
+
+      - name: Lint (deadnix)
+        run: nix run nixpkgs#deadnix -- . --fail

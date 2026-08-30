@@ -6,7 +6,7 @@ Declarative NixOS configuration for a personal workstation. Everything is reprod
 
 **Stack**: Niri (Wayland WM) · Noctalia (desktop shell — panels, dock, notifications) · Stylix (system-wide app theming) · WezTerm · Neovim (LazyVim) · Firefox
 
-**Hosts**: `nixos` (VM) · `laptop` (stub — hardware config pending)
+**Hosts**: `taldain` (VM) · `lumar` (home laptop) · `scadrial` (work laptop, stub — hardware config pending)
 
 > **Noctalia** ([docs](https://docs.noctalia.dev/v4/)) is a QML/Quickshell desktop shell, not a CLI shell. It provides the visual layer on top of Niri (status bar, launcher, notifications, widgets). Requires `nixpkgs-unstable` and its own flake input.
 
@@ -23,7 +23,7 @@ This repo uses the **Dendritic Pattern**: `flake-parts` + `import-tree` + featur
 | Kind | Role | Example |
 |------|------|---------|
 | **`parts.nix`** | Declares shared flake-parts options | `username`, `nixosModules`, `hmModules` |
-| **Host configs** (`nixos.nix`, `laptop.nix`) | Assembles a `nixosSystem` from collected modules | Wires hardware + features into final output |
+| **Host configs** (`taldain.nix`, `lumar.nix`, `scadrial.nix`) | Assembles a `nixosSystem` from collected modules | Wires hardware + features into final output |
 | **Feature modules** (`features/*.nix`) | Appends to `nixosModules` / `hmModules` lists | `desktop.nix`, `niri.nix`, `shells.nix`, … |
 
 ### Key rules
@@ -63,8 +63,9 @@ flake.nix                   # 3 lines: inputs + delegates to import-tree
 flake.lock                  # pinned inputs — commit after updates
 modules/
   parts.nix                 # systems list + shared options (username, nixosModules, hmModules)
-  nixos.nix                 # assembles nixosConfigurations.nixos (VM)
-  laptop.nix                # assembles nixosConfigurations.laptop (stub)
+  taldain.nix               # assembles nixosConfigurations.taldain (VM)
+  lumar.nix                 # assembles nixosConfigurations.lumar (home laptop)
+  scadrial.nix              # assembles nixosConfigurations.scadrial (work laptop, stub)
   features/
     system/
       system.nix            # boot, users, security, swap
@@ -88,11 +89,14 @@ modules/
       packages.nix          # home.packages CLI tools (HM)
       devenv.nix            # devenv + direnv (HM)
 hosts/
-  nixos/
+  taldain/
     disko.nix               # disk layout for VM (/dev/vda, Btrfs subvolumes)
     hardware-configuration.nix  # generated — do not hand-edit
-  laptop/
-    disko.nix               # disk layout for laptop (/dev/nvme0n1, Btrfs subvolumes)
+  lumar/
+    disko.nix               # disk layout for home laptop (/dev/nvme0n1, Btrfs subvolumes)
+    hardware-configuration.nix  # generated — do not hand-edit
+  scadrial/
+    disko.nix               # disk layout for work laptop (template — verify disk name)
     hardware-configuration.nix  # placeholder — replace with real file from nixos-generate-config
 config/
   nvim/                     # Neovim / LazyVim config
@@ -108,7 +112,7 @@ Host-specific overrides go inline in each host's config file:
 | What | Where |
 |------|-------|
 | Hostname | Inline in host config (`networking.hostName`) |
-| VM proxy / spice agent | Inline in `modules/nixos.nix` |
+| VM proxy / spice agent | Inline in `modules/taldain.nix` |
 | Disk layout | `hosts/<hostname>/disko.nix` |
 | Hardware | `hosts/<hostname>/hardware-configuration.nix` |
 | Everything else | `modules/features/` |
@@ -119,11 +123,12 @@ Host-specific overrides go inline in each host's config file:
 
 ```bash
 # Apply system + home config
-sudo nixos-rebuild switch --flake .#nixos        # VM
-sudo nixos-rebuild switch --flake .#laptop       # laptop
+sudo nixos-rebuild switch --flake .#taldain      # VM
+sudo nixos-rebuild switch --flake .#lumar        # home laptop
+sudo nixos-rebuild switch --flake .#scadrial     # work laptop
 
 # Dry-run to check for errors without applying
-sudo nixos-rebuild dry-activate --flake .#nixos
+sudo nixos-rebuild dry-activate --flake .#taldain
 
 # Roll back to previous generation if something breaks
 sudo nixos-rebuild switch --rollback

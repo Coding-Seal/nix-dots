@@ -5,20 +5,24 @@
     ({ pkgs, ... }: {
       programs.noctalia-greeter.enable = true;
 
-      hardware.graphics.enable = true;
-
-      services.pipewire = {
-        enable = true;
-        alsa.enable = true;
-        pulse.enable = true;
+      hardware = {
+        graphics.enable = true;
+        bluetooth = {
+          enable = true;
+          powerOnBoot = true;
+        };
       };
 
-      hardware.bluetooth.enable = true;
-      hardware.bluetooth.powerOnBoot = true;
-      services.blueman.enable = true;
-
-      services.power-profiles-daemon.enable = true;
-      services.upower.enable = true;
+      services = {
+        pipewire = {
+          enable = true;
+          alsa.enable = true;
+          pulse.enable = true;
+        };
+        blueman.enable = true;
+        power-profiles-daemon.enable = true;
+        upower.enable = true;
+      };
 
       xdg.portal = {
         enable = true;
@@ -30,7 +34,10 @@
         # niri speaks, so it must come first for screen sharing (Telegram, Zoom)
         # to work; gtk is the fallback for interfaces gnome doesn't implement
         # (e.g. FileChooser).
-        config.common.default = [ "gnome" "gtk" ];
+        config.common.default = [
+          "gnome"
+          "gtk"
+        ];
       };
 
       fonts.packages = with pkgs; [

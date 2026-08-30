@@ -1,6 +1,6 @@
 { config, inputs, ... }:
 {
-  flake.nixosConfigurations.nixos = inputs.nixpkgs.lib.nixosSystem {
+  flake.nixosConfigurations.taldain = inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
     modules = [
       # Binary cache — pre-built Noctalia/Quickshell binaries (saves ~30 min compile)
@@ -20,8 +20,8 @@
       }
 
       inputs.disko.nixosModules.disko
-      ../hosts/nixos/disko.nix
-      ../hosts/nixos/hardware-configuration.nix
+      ../hosts/taldain/disko.nix
+      ../hosts/taldain/hardware-configuration.nix
 
       inputs.home-manager.nixosModules.home-manager
       {
@@ -31,19 +31,23 @@
           backupFileExtension = "bak";
           users.${config.username} = {
             imports = config.hmModules;
-            home.username = config.username;
-            home.homeDirectory = "/home/${config.username}";
+            home = {
+              inherit (config) username;
+              homeDirectory = "/home/${config.username}";
+              stateVersion = "25.05";
+            };
             programs.home-manager.enable = true;
-            home.stateVersion = "25.05";
           };
         };
       }
 
       # VM-specific overrides
       ({ pkgs, ... }: {
-        networking.hostName = "nixos";
-        networking.proxy.default = "http://192.168.122.1:2081";
-        networking.proxy.noProxy = "127.0.0.1,localhost";
+        networking = {
+          hostName = "taldain";
+          proxy.default = "http://192.168.122.1:2081";
+          proxy.noProxy = "127.0.0.1,localhost";
+        };
 
         services.spice-vdagentd.enable = true;
 
@@ -63,7 +67,10 @@
 
         systemd.user.services.spice-vdagent = {
           description = "SPICE vdagent (clipboard + resize)";
-          after = [ "graphical-session.target" "xwayland-satellite.service" ];
+          after = [
+            "graphical-session.target"
+            "xwayland-satellite.service"
+          ];
           partOf = [ "graphical-session.target" ];
           wantedBy = [ "graphical-session.target" ];
           environment.DISPLAY = ":0";
@@ -77,8 +84,12 @@
         # Load the DRM driver for the VM's GPU so niri can find /dev/dri/card0.
         # QXL is the default for SPICE/KVM VMs; virtio-gpu is used when the VM
         # display adapter is set to "Virtio" in virt-manager.
-        boot.kernelModules = [ "qxl" "virtio-gpu" ];
+        boot.kernelModules = [
+          "qxl"
+          "virtio-gpu"
+        ];
       })
-    ] ++ config.nixosModules;
+    ]
+    ++ config.nixosModules;
   };
 }

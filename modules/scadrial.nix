@@ -1,6 +1,6 @@
 { config, inputs, ... }:
 {
-  flake.nixosConfigurations.laptop = inputs.nixpkgs.lib.nixosSystem {
+  flake.nixosConfigurations.scadrial = inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
     modules = [
       {
@@ -19,8 +19,8 @@
       }
 
       inputs.disko.nixosModules.disko
-      ../hosts/laptop/disko.nix
-      ../hosts/laptop/hardware-configuration.nix
+      ../hosts/scadrial/disko.nix
+      ../hosts/scadrial/hardware-configuration.nix
 
       inputs.home-manager.nixosModules.home-manager
       {
@@ -30,20 +30,21 @@
           backupFileExtension = "bak";
           users.${config.username} = {
             imports = config.hmModules;
-            home.username = config.username;
-            home.homeDirectory = "/home/${config.username}";
+            home = {
+              inherit (config) username;
+              homeDirectory = "/home/${config.username}";
+              stateVersion = "25.05";
+            };
             programs.home-manager.enable = true;
-            home.stateVersion = "25.05";
           };
         };
       }
 
-      # Laptop-specific settings
+      # Work laptop-specific settings — add proxy/etc once known.
       {
-        networking.hostName = "laptop";
-        networking.proxy.default = "socks4://192.168.1.143:1080";
-        networking.proxy.noProxy = "127.0.0.1,localhost";
+        networking.hostName = "scadrial";
       }
-    ] ++ config.nixosModules;
+    ]
+    ++ config.nixosModules;
   };
 }

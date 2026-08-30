@@ -1,7 +1,6 @@
-{ ... }:
-{
+_: {
   config.hmModules = [
-    ({ ... }: {
+    (_: {
       programs.zed-editor = {
         enable = true;
         extensions = [ "go" ];

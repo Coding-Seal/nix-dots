@@ -19,14 +19,18 @@
 #   On an already-installed system, this file just declares the mounts —
 #   disko's NixOS module generates fileSystems entries from it automatically.
 #   Remove any duplicate fileSystems entries from hardware-configuration.nix.
-{ ... }:
+_:
 
 let
   # TODO: change this if your VM disk is /dev/sda (VirtualBox/VMware)
   # Run `lsblk` on the VM to see your disk name
   disk = "/dev/vda";
 
-  btrfsOpts = [ "compress=zstd" "noatime" "space_cache=v2" ];
+  btrfsOpts = [
+    "compress=zstd"
+    "noatime"
+    "space_cache=v2"
+  ];
 in
 {
   disko.devices = {
@@ -54,7 +58,10 @@ in
             size = "100%";
             content = {
               type = "btrfs";
-              extraArgs = [ "-L" "nixos" ]; # label the volume "nixos"
+              extraArgs = [
+                "-L"
+                "nixos"
+              ]; # label the volume "nixos"
               subvolumes = {
 
                 # OS root — gets snapshotted before each nixos-rebuild
