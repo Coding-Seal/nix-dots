@@ -61,6 +61,9 @@ config.nixosModules = [
 ```
 flake.nix                   # 3 lines: inputs + delegates to import-tree
 flake.lock                  # pinned inputs — commit after updates
+justfile                    # command runner wrapping the workflows below (needs devenv shell)
+devenv.nix                  # project devshell: nixfmt/statix/deadnix/just/nvd + git-hooks + fmt/lint scripts
+wallpaper/                  # images used by stylix.image and Noctalia's wallpaper picker
 modules/
   parts.nix                 # systems list + shared options (username, nixosModules, hmModules)
   taldain.nix               # assembles nixosConfigurations.taldain (VM)
@@ -73,9 +76,10 @@ modules/
     desktop/
       desktop.nix           # greeter, pipewire, bluetooth, portals, fonts
       niri.nix              # programs.niri (NixOS) + niri KDL config (HM)
-      noctalia.nix          # programs.noctalia (NixOS + HM) — palette derived from Stylix, see Theming below
-      stylix.nix            # system-wide theming: base16 scheme, polarity (NixOS, cascades to HM)
+      noctalia.nix          # programs.noctalia (NixOS + HM) — settings/customPalettes built by hand from Stylix, see Theming below
+      stylix.nix            # system-wide theming: base16 scheme, polarity, image (NixOS, cascades to HM)
       theming.nix           # dconf + GTK/Qt support packages Stylix's targets need at runtime
+      hidden-apps.nix       # NoDisplay=true overrides (HM) for launcher clutter (blueman, htop, unused LibreOffice components, etc.)
     apps/                   # grouped by purpose — import-tree doesn't care about path/filename,
                              # this layout is purely for humans
       browsers/
@@ -91,10 +95,11 @@ modules/
       office/
         libreoffice.nix
       communication/
-        telegram.nix        # HM — no Stylix target exists for it
-        zoom.nix            # personalHmModules — see "Host-specific vs shared config" below
+        telegram.nix               # HM — no Stylix target; builds a gruvbox theme at build time instead, see below
+        telegram-theme-recolor.py  # hue-preserving recolor script the derivation above shells out to
+        zoom.nix                   # personalHmModules — see "Host-specific vs shared config" below
       network/
-        nekoray.nix         # pkgs.throne (nixpkgs renamed nekoray → throne)
+        nekoray.nix         # programs.throne (NixOS) — nixpkgs renamed nekoray → throne; wraps Core with cap_net_admin for TUN mode
     shell/
       shells.nix            # fish, zsh, nushell, starship (HM)
       packages.nix          # home.packages CLI tools (HM)
@@ -132,25 +137,34 @@ Host-specific overrides go inline in each host's config file:
 
 ## Common commands
 
+`justfile` at the repo root wraps the everyday ones (needs the devenv shell — `direnv allow` or `devenv shell` — for `just`/`nvd`/`fd`):
+
 ```bash
-# Apply system + home config
+just switch          # rebuild switch for this machine's hostname (or: just switch lumar)
+just dry             # dry-activate first, to check for errors without applying
+just rollback        # roll back to the previous generation
+just diff            # build without switching, then nvd diff against the running system
+just update          # nix flake update (all inputs) — commit flake.lock after
+just update-input nixpkgs
+just fmt             # nixfmt every .nix file
+just check           # run the full pre-commit suite (deadnix, nixfmt, statix) on demand
+just gc              # nix-collect-garbage -d
+```
+
+Raw commands, for when the devenv shell isn't active or you need something `just` doesn't wrap:
+
+```bash
 sudo nixos-rebuild switch --flake .#taldain      # VM
 sudo nixos-rebuild switch --flake .#lumar        # home laptop
 sudo nixos-rebuild switch --flake .#scadrial     # work laptop
 
-# Dry-run to check for errors without applying
 sudo nixos-rebuild dry-activate --flake .#taldain
 
-# Roll back to previous generation if something breaks
 sudo nixos-rebuild switch --rollback
 
-# Update all flake inputs (then commit flake.lock)
 nix flake update
-
-# Update a single input
 nix flake update nixpkgs
 
-# Show what changed between generations
 nvd diff /run/current-system result
 
 # Search for a package
@@ -159,7 +173,6 @@ nix search nixpkgs <name>
 # Open a temporary shell with a package (for testing)
 nix shell nixpkgs#<name>
 
-# Garbage-collect old generations (free disk space)
 sudo nix-collect-garbage -d
 ```
 
@@ -299,13 +312,14 @@ Use the Cachix cache to avoid compiling Quickshell locally — cache settings li
 
 App color theming flows from **Stylix**, not from Noctalia's own template engine. `modules/features/desktop/stylix.nix` sets `stylix.enable`, `polarity`, and `base16Scheme` at the NixOS level; because it imports `inputs.stylix.nixosModules.stylix` (not just the HM module), Stylix auto-injects itself into home-manager via `home-manager.sharedModules` and cascades those three values to every HM user automatically — no separate wiring needed per host.
 
-- **Noctalia's palette is derived from Stylix**, not picked independently. Stylix's `noctalia` target writes `programs.noctalia.customPalettes.stylix` from the active base16 scheme and points `programs.noctalia.settings.theme` at it. Don't re-enable Noctalia's own `theme.templates.builtin_ids` for `gtk3`/`gtk4`/`qt`/`kcolorscheme` — Stylix's `gtk`/`qt` targets nix-manage those exact same file paths (`gtk-3.0/gtk.css`, etc.), so both writing to them will fight.
+- **Noctalia's palette is derived from Stylix**, not picked independently — but not automatically. nixpkgs' bundled Stylix "noctalia" target (`modules/noctalia-shell/hm.nix` upstream) only wires the deprecated `programs.noctalia-shell` option, which is unused here (real option is `programs.noctalia`, from `inputs.noctalia.homeModules.default`) — that target's `lib.optionals (options.programs ? noctalia-shell)` guard is false in this tree, so it's a complete no-op. `modules/features/desktop/noctalia.nix` builds `programs.noctalia.customPalettes.stylix` and `programs.noctalia.settings.theme` by hand instead, from `config.lib.stylix.colors`. Leave Noctalia's own `theme.templates.builtin_ids`/`community_ids` empty — Stylix's `gtk`/`qt`/`wezterm` targets nix-manage those same file paths, so letting Noctalia's own template engine also write them will fight; the same goes for `telegram`, which this repo themes separately (see `communication/telegram.nix`).
 - **`modules/features/desktop/theming.nix`** only carries what Stylix's targets still need at the system level (`programs.dconf.enable`) plus unrelated manual tools (`nwg-look`, `gsettings-desktop-schemas`). Don't add `adw-gtk3`/`qt6ct` back — Stylix's gtk/qt targets install those declaratively themselves (`gtk.theme.package`, `qt.platformTheme.name`).
 - **Some Stylix targets need explicit config to activate**, they don't all just work from `autoEnable`:
   - `stylix.targets.firefox.profileNames` / `stylix.targets.zen-browser.profileNames` must list your HM profile names (e.g. `[ "default" ]`) — these targets can't discover profile names on their own and silently no-op without it (surfaces as an `evaluation warning`, not an error).
   - The zen-browser target additionally requires the `programs.zen-browser` HM option namespace to exist at all — a raw `home.packages` install of the browser (no HM module) doesn't trigger it. Use the zen-browser flake's own HM module (`inputs.zen-browser.homeModules.default`), which mirrors home-manager's built-in firefox module.
 - **WezTerm**: `apps/dev/wezterm.nix` uses `programs.wezterm.settings` (structured attrs), not `extraConfig`. This is required, not stylistic — once any module (Stylix's wezterm target included) also sets `programs.wezterm.settings`, home-manager stops inlining `extraConfig` directly and instead wraps it in a function; a self-contained `local config = wezterm.config_builder(); ...; return config` extraConfig would silently become dead code (mutating a shadowed local, its `return` discarded) with no error.
-- **No Stylix target exists** for Telegram, Zoom, or (as a full app-theming target) Chrome — Chrome only gets a lightweight `programs.chromium` browser-theme-color policy, not real CSS-level theming.
+- **No Stylix target exists** for Telegram, Zoom, or (as a full app-theming target) Chrome — Chrome only gets a lightweight `programs.chromium` browser-theme-color policy, not real CSS-level theming. Telegram gets a hand-built workaround instead: `communication/telegram.nix` fetches Telegram Desktop's own official night theme (pinned upstream commit), recolors every literal hex color onto `config.lib.stylix.colors` via `telegram-theme-recolor.py` (lightness-preserving hue remap, so hover/active gradients stay legible), and drops the resulting `.tdesktop-theme` at `~/.local/share/telegram-desktop-theme/gruvbox.tdesktop-theme`. Telegram's theme storage (`tdata`) is opaque/encrypted, so importing it is still a one-time manual step (Settings → Chat Settings → Themes → choose from file) — Nix can't finish that part.
+- **Wallpaper**: `stylix.image` (`desktop/stylix.nix`) is the single source of truth for the active wallpaper; `desktop/noctalia.nix` points `wallpaper.default.path` at it. `wallpaper.directory` (the in-app picker's browse pool) is deliberately a literal `/home/<user>/nix-dots/wallpaper` path rather than a Nix-copied one, so new files dropped into `wallpaper/` show up without a rebuild.
 
 ---
 

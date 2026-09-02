@@ -7,6 +7,8 @@
     pkgs.deadnix
     pkgs.nixd
     pkgs.fd
+    pkgs.just
+    pkgs.nvd
   ];
 
   # https://devenv.sh/git-hooks/ — runs on every commit.

@@ -44,8 +44,6 @@
       {
         networking = {
           hostName = "lumar";
-          proxy.default = "socks4://192.168.1.143:1080";
-          proxy.noProxy = "127.0.0.1,localhost";
         };
       }
     ]
