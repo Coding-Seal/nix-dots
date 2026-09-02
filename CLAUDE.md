@@ -76,14 +76,25 @@ modules/
       noctalia.nix          # programs.noctalia (NixOS + HM) — palette derived from Stylix, see Theming below
       stylix.nix            # system-wide theming: base16 scheme, polarity (NixOS, cascades to HM)
       theming.nix           # dconf + GTK/Qt support packages Stylix's targets need at runtime
-    apps/
+    apps/                   # grouped by purpose — import-tree doesn't care about path/filename,
+                             # this layout is purely for humans
       browsers/
         firefox.nix         # firefox (HM) — themed via Stylix's firefox target
         chrome.nix          # google-chrome (HM)
         zen-browser.nix     # zen-browser flake's programs.zen-browser module (HM) — themed via Stylix
-      wezterm.nix           # wezterm (HM) — colors/fonts owned by Stylix's wezterm target
-      zed.nix               # zed-editor (HM) — themed via Stylix's zed target
-      communication.nix     # telegram, zoom (HM) — no Stylix target exists for either
+      dev/
+        wezterm.nix         # wezterm (HM) — colors/fonts owned by Stylix's wezterm target
+        zed.nix             # zed-editor (HM) — themed via Stylix's zed target
+        claude-code.nix     # personalHmModules — see "Host-specific vs shared config" below
+        herdr.nix           # from nixpkgs-unstable (not yet in pinned nixos-26.05)
+        opencode.nix
+      office/
+        libreoffice.nix
+      communication/
+        telegram.nix        # HM — no Stylix target exists for it
+        zoom.nix            # personalHmModules — see "Host-specific vs shared config" below
+      network/
+        nekoray.nix         # pkgs.throne (nixpkgs renamed nekoray → throne)
     shell/
       shells.nix            # fish, zsh, nushell, starship (HM)
       packages.nix          # home.packages CLI tools (HM)
@@ -293,7 +304,7 @@ App color theming flows from **Stylix**, not from Noctalia's own template engine
 - **Some Stylix targets need explicit config to activate**, they don't all just work from `autoEnable`:
   - `stylix.targets.firefox.profileNames` / `stylix.targets.zen-browser.profileNames` must list your HM profile names (e.g. `[ "default" ]`) — these targets can't discover profile names on their own and silently no-op without it (surfaces as an `evaluation warning`, not an error).
   - The zen-browser target additionally requires the `programs.zen-browser` HM option namespace to exist at all — a raw `home.packages` install of the browser (no HM module) doesn't trigger it. Use the zen-browser flake's own HM module (`inputs.zen-browser.homeModules.default`), which mirrors home-manager's built-in firefox module.
-- **WezTerm**: `apps/wezterm.nix` uses `programs.wezterm.settings` (structured attrs), not `extraConfig`. This is required, not stylistic — once any module (Stylix's wezterm target included) also sets `programs.wezterm.settings`, home-manager stops inlining `extraConfig` directly and instead wraps it in a function; a self-contained `local config = wezterm.config_builder(); ...; return config` extraConfig would silently become dead code (mutating a shadowed local, its `return` discarded) with no error.
+- **WezTerm**: `apps/dev/wezterm.nix` uses `programs.wezterm.settings` (structured attrs), not `extraConfig`. This is required, not stylistic — once any module (Stylix's wezterm target included) also sets `programs.wezterm.settings`, home-manager stops inlining `extraConfig` directly and instead wraps it in a function; a self-contained `local config = wezterm.config_builder(); ...; return config` extraConfig would silently become dead code (mutating a shadowed local, its `return` discarded) with no error.
 - **No Stylix target exists** for Telegram, Zoom, or (as a full app-theming target) Chrome — Chrome only gets a lightweight `programs.chromium` browser-theme-color policy, not real CSS-level theming.
 
 ---

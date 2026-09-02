@@ -20,5 +20,14 @@
       type = lib.types.listOf lib.types.raw;
       default = [ ];
     };
+
+    # Personal-use HM modules (leisure apps, personal dev tools) — opted into
+    # explicitly per host, unlike hmModules which every host gets. Only
+    # taldain/lumar (personal machines) pull these in; scadrial (work
+    # laptop) does not.
+    personalHmModules = lib.mkOption {
+      type = lib.types.listOf lib.types.raw;
+      default = [ ];
+    };
   };
 }

@@ -6,7 +6,6 @@
         (pkgs.callPackage ../../../pkgs/rtk.nix { })
         git
         gh
-        claude-code
         yazi
         ripgrep
         fd
@@ -44,6 +43,13 @@
           "FileTools"
         ];
         mimeType = [ "inode/directory" ];
+      };
+
+      # Make it the actual default handler for directories, not just an
+      # entry that shows up in "open with" menus.
+      xdg.mimeApps = {
+        enable = true;
+        defaultApplications."inode/directory" = "yazi.desktop";
       };
     })
   ];

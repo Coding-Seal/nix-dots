@@ -2,6 +2,8 @@ disabled = []
 ignore = [
   ".direnv",
   ".devenv",
+  # Claude Code subagent worktrees (not part of the repo's own source)
+  ".claude",
   # nixos-generate-config output, explicitly marked "do not modify"
   "hosts/*/hardware-configuration.nix",
 ]

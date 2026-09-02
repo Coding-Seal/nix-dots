@@ -30,7 +30,7 @@
           useUserPackages = true;
           backupFileExtension = "bak";
           users.${config.username} = {
-            imports = config.hmModules;
+            imports = config.hmModules ++ config.personalHmModules;
             home = {
               inherit (config) username;
               homeDirectory = "/home/${config.username}";
