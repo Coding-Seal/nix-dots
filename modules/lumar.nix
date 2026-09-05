@@ -41,11 +41,23 @@
       }
 
       # Laptop-specific settings
-      {
+      ({ pkgs, ... }: {
         networking = {
           hostName = "lumar";
         };
-      }
+
+        # Dual-boots Windows — GRUB + os-prober instead of the shared systemd-boot default.
+        boot.loader = {
+          systemd-boot.enable = false;
+          grub = {
+            enable = true;
+            device = "nodev";
+            efiSupport = true;
+            useOSProber = true;
+          };
+        };
+        environment.systemPackages = [ pkgs.os-prober ];
+      })
     ]
     ++ config.nixosModules;
   };

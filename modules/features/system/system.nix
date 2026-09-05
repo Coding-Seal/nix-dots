@@ -2,16 +2,12 @@
 {
   config.nixosModules = [
     { nixpkgs.overlays = [ inputs.nur.overlays.default ]; }
-    ({ pkgs, ... }: {
-      # Replace systemd-boot with GRUB for dual boot
+    ({ pkgs, lib, ... }: {
+      # systemd-boot by default; hosts that need to dual-boot another OS
+      # override this (see modules/lumar.nix, which switches to GRUB).
       boot.loader = {
         efi.canTouchEfiVariables = true;
-        grub = {
-          enable = true;
-          device = "nodev";
-          efiSupport = true;
-          useOSProber = true;
-        };
+        systemd-boot.enable = lib.mkDefault true;
       };
 
       # Timezone is set automatically via geoclue2 location lookup below.
@@ -50,7 +46,6 @@
         algorithm = "zstd";
         memoryPercent = 50;
       };
-      environment.systemPackages = [ pkgs.os-prober ];
       system.stateVersion = "25.05";
     })
   ];
