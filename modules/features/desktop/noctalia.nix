@@ -26,30 +26,33 @@
           # programs.noctalia-shell option (unused here), so it's a no-op —
           # build the real palette by hand from the same base16 scheme instead.
           #
-          # Field names must match Noctalia's *current* compiled (C++) custom-palette
+          # Field names match Noctalia's *current* compiled (C++) custom-palette
           # schema (theme/theme_service.cpp: readPaletteJson + readModeTerminalJson) —
-          # unprefixed role names plus a required `terminal` block. An earlier version
-          # of this file used "m"-prefixed keys (mPrimary, mOnPrimary, ...) with no
-          # terminal section, left over from Noctalia's old QML/quickshell-era role
-          # names; without `terminal`, Noctalia's parser rejects the whole file as
-          # invalid and silently falls back to its builtin theme (no error visible
-          # anywhere but the log: "custom palette 'stylix' not found or invalid").
-          # ANSI terminal colors below follow the standard base16-shell mapping.
+          # unprefixed role names plus a required `terminal` block.
+          #
+          # Role/slot choices below are picked to match how Noctalia's own bundled
+          # "Gruvbox" builtin theme (theme/builtin_palettes.cpp) applies each role —
+          # e.g. primary is base0B (green), not base0D, because that's what the
+          # official theme uses for primary. Purely base16-driven throughout: base16
+          # only has one shade per hue, so terminal.normal and terminal.bright reuse
+          # the same slots (unlike true Gruvbox's separate muted/vivid ANSI tones) —
+          # that palette difference is fine, this is only about matching *which*
+          # role gets *which* hue.
           customPalettes.stylix.dark = with config.lib.stylix.colors.withHashtag; {
-            primary = base0D;
+            primary = base0B;
             onPrimary = base00;
-            secondary = base0E;
+            secondary = base0A;
             onSecondary = base00;
-            tertiary = base0C;
+            tertiary = base0D;
             onTertiary = base00;
             error = base08;
             onError = base00;
             surface = base00;
-            onSurface = base05;
-            hover = base0C;
+            onSurface = base07;
+            hover = base0D;
             onHover = base00;
             surfaceVariant = base01;
-            onSurfaceVariant = base04;
+            onSurfaceVariant = base06;
             outline = base03;
             shadow = base00;
 
@@ -62,7 +65,7 @@
                 blue = base0D;
                 magenta = base0E;
                 cyan = base0C;
-                white = base05;
+                white = base06;
               };
               bright = {
                 black = base03;
@@ -72,14 +75,14 @@
                 blue = base0D;
                 magenta = base0E;
                 cyan = base0C;
-                white = base07;
+                white = base06;
               };
-              foreground = base05;
+              foreground = base06;
               background = base00;
-              cursor = base05;
+              cursor = base06;
               cursorText = base00;
-              selectionFg = base05;
-              selectionBg = base02;
+              selectionFg = base06;
+              selectionBg = base03;
             };
           };
 
