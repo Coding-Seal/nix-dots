@@ -150,7 +150,12 @@
             }
           ];
 
-          spawn-at-startup = [ "noctalia" ];
+          # kdeconnectd: niri doesn't process /etc/xdg/autostart, so the
+          # daemon needs an explicit spawn (see kdeconnect.nix for install).
+          spawn-at-startup = [
+            "noctalia"
+            "kdeconnectd"
+          ];
         };
       };
 
