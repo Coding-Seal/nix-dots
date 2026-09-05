@@ -25,24 +25,62 @@
           # nixpkgs' bundled Stylix "noctalia" target only wires the deprecated
           # programs.noctalia-shell option (unused here), so it's a no-op —
           # build the real palette by hand from the same base16 scheme instead.
-          # Role mapping mirrors what that dead target intended to do.
+          #
+          # Field names must match Noctalia's *current* compiled (C++) custom-palette
+          # schema (theme/theme_service.cpp: readPaletteJson + readModeTerminalJson) —
+          # unprefixed role names plus a required `terminal` block. An earlier version
+          # of this file used "m"-prefixed keys (mPrimary, mOnPrimary, ...) with no
+          # terminal section, left over from Noctalia's old QML/quickshell-era role
+          # names; without `terminal`, Noctalia's parser rejects the whole file as
+          # invalid and silently falls back to its builtin theme (no error visible
+          # anywhere but the log: "custom palette 'stylix' not found or invalid").
+          # ANSI terminal colors below follow the standard base16-shell mapping.
           customPalettes.stylix.dark = with config.lib.stylix.colors.withHashtag; {
-            mPrimary = base0D;
-            mOnPrimary = base00;
-            mSecondary = base0E;
-            mOnSecondary = base00;
-            mTertiary = base0C;
-            mOnTertiary = base00;
-            mError = base08;
-            mOnError = base00;
-            mSurface = base00;
-            mOnSurface = base05;
-            mHover = base0C;
-            mOnHover = base00;
-            mSurfaceVariant = base01;
-            mOnSurfaceVariant = base04;
-            mOutline = base03;
-            mShadow = base00;
+            primary = base0D;
+            onPrimary = base00;
+            secondary = base0E;
+            onSecondary = base00;
+            tertiary = base0C;
+            onTertiary = base00;
+            error = base08;
+            onError = base00;
+            surface = base00;
+            onSurface = base05;
+            hover = base0C;
+            onHover = base00;
+            surfaceVariant = base01;
+            onSurfaceVariant = base04;
+            outline = base03;
+            shadow = base00;
+
+            terminal = {
+              normal = {
+                black = base00;
+                red = base08;
+                green = base0B;
+                yellow = base0A;
+                blue = base0D;
+                magenta = base0E;
+                cyan = base0C;
+                white = base05;
+              };
+              bright = {
+                black = base03;
+                red = base08;
+                green = base0B;
+                yellow = base0A;
+                blue = base0D;
+                magenta = base0E;
+                cyan = base0C;
+                white = base07;
+              };
+              foreground = base05;
+              background = base00;
+              cursor = base05;
+              cursorText = base00;
+              selectionFg = base05;
+              selectionBg = base02;
+            };
           };
 
           # Ported from the live GUI-managed ~/.local/state/noctalia/settings.toml
