@@ -7,6 +7,13 @@
         enable = true;
         setAsDefaultBrowser = true;
 
+        # Bitwarden is the only password manager: remove Firefox's own from
+        # the picture entirely, rather than picking off individual signon.*
+        # prefs. See https://mozilla.github.io/policy-templates/.
+        policies = {
+          PasswordManagerEnabled = false;
+        };
+
         profiles.default = {
           isDefault = true;
 
@@ -24,8 +31,13 @@
             "zen.workspaces.continue-where-left-off" = true;
             "zen.welcome-screen.seen" = true;
             "zen.urlbar.behavior" = "float";
-            "zen.tabs.vertical.right-side" = true;
           };
+
+          # From https://zen-browser.app/mods — installed by UUID at activation.
+          mods = [
+            "c01d3e22-1cee-45c1-a25e-53c0f180eea8" # Ghost Tabs
+            "72f8f48d-86b9-4487-acea-eb4977b18f21" # Better CtrlTab Panel
+          ];
 
           search = {
             force = true;
