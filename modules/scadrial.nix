@@ -47,11 +47,14 @@
           networking.hostName = "scadrial";
 
           # Cisco AnyConnect VPN. openconnect speaks the AnyConnect SSL-VPN
-          # protocol; the NetworkManager plugin wires it into nm-applet /
+          # protocol; the NetworkManager plugin wires it into nm-connection-editor /
           # Noctalia's network widget. `openconnect` is also on PATH for
           # command-line use (`sudo openconnect <host>`).
           networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
-          environment.systemPackages = [ pkgs.openconnect ];
+          environment.systemPackages = [
+            pkgs.openconnect
+            pkgs.networkmanagerapplet # nm-connection-editor — GUI to author the VPN profile
+          ];
         }
       )
     ]
