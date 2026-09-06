@@ -248,7 +248,7 @@
             # ../../../wallpaper) so the in-app picker's browsing pool sees new
             # files dropped into the repo's wallpaper/ folder without requiring
             # a rebuild first.
-            wallpaper.directory = "/home/${config.home.username}/nix-dots/wallpaper";
+            wallpaper.directory = "/home/${config.home.username}/Projects/nix-dots/wallpaper";
             wallpaper.default.path = toString config.stylix.image;
           };
         };

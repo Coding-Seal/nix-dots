@@ -29,7 +29,7 @@
       ];
 
       # nh needs to know which flake to operate on by default
-      home.sessionVariables.NH_FLAKE = "/home/${config.username}/nix-dots";
+      home.sessionVariables.NH_FLAKE = "/home/${config.username}/Projects/nix-dots";
 
       # Override yazi's desktop entry so launchers open it in a terminal
       xdg.desktopEntries.yazi = {
