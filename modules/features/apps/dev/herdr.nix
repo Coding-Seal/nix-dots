@@ -4,7 +4,7 @@
   # nixpkgs-unstable instead of tracking a separate herdr flake.
   config.hmModules = [
     ({ pkgs, ... }: {
-      home.packages = [ inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.herdr ];
+      home.packages = [ inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.herdr ];
     })
   ];
 }

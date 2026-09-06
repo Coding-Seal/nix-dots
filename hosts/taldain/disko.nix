@@ -22,8 +22,7 @@
 _:
 
 let
-  # TODO: change this if your VM disk is /dev/sda (VirtualBox/VMware)
-  # Run `lsblk` on the VM to see your disk name
+  # QEMU/KVM default; VirtualBox/VMware VMs typically use /dev/sda instead.
   disk = "/dev/vda";
 
   btrfsOpts = [

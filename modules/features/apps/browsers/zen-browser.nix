@@ -10,8 +10,7 @@
         profiles.default = {
           isDefault = true;
 
-          # Same extension set as apps/browsers/firefox.nix, via the same
-          # NUR rycee repo (already wired system-wide in system.nix).
+          # Via the NUR rycee repo (already wired system-wide in system.nix).
           extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
             ublock-origin
             bitwarden

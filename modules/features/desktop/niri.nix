@@ -56,7 +56,7 @@
           binds = {
             "Mod+Return".spawn = config.terminal;
             "Mod+D".spawn-sh = "noctalia msg panel-toggle launcher";
-            "Mod+B".spawn = "firefox";
+            "Mod+B".spawn = "zen-beta";
 
             "Mod+Q".close-window = _: { };
             "Mod+F".fullscreen-window = _: { };

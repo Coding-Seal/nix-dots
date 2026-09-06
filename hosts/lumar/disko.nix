@@ -8,10 +8,6 @@
 #     subvol @nix        →  /nix
 #     subvol @snapshots  →  /.snapshots
 #     subvol @var-log    →  /var/log
-#
-# TODO: verify the disk name with `lsblk` on the laptop.
-#   NVMe drives  → /dev/nvme0n1
-#   SATA/USB SSD → /dev/sda
 _:
 
 let

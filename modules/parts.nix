@@ -3,7 +3,6 @@
   config.systems = [ "x86_64-linux" ];
 
   options = {
-    # TODO: change to your actual username
     username = lib.mkOption {
       type = lib.types.str;
       default = "r.ganiullin";

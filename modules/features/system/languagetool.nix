@@ -1,6 +1,6 @@
 _: {
   # Self-hosted LanguageTool server for the browser extension (already
-  # installed via Firefox's NUR addon in apps/browsers/firefox.nix) to point
+  # installed via the NUR addon in apps/browsers/zen-browser.nix) to point
   # at instead of the public API. Bound to loopback only — no auth on the
   # LanguageTool HTTP API, so it must not be reachable from the LAN.
   config.nixosModules = [

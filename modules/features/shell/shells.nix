@@ -17,66 +17,9 @@ _: {
           };
         };
 
-        zsh = {
-          enable = true;
-          autosuggestion.enable = true;
-          syntaxHighlighting.enable = true;
-          history = {
-            size = 50000;
-            save = 50000;
-            ignoreDups = true;
-            share = true;
-          };
-          initContent = ''
-            eval "$(zoxide init zsh)"
-            alias ls='eza --icons'
-            alias ll='eza -la --icons'
-            alias lt='eza --tree --icons'
-            alias cat='bat'
-          '';
-        };
-
-        nushell = {
-          enable = true;
-          configFile.text = ''
-            $env.config = {
-                show_banner: false
-                edit_mode: vi
-                history: {
-                    max_size: 50000
-                    sync_on_enter: true
-                    file_format: "sqlite"
-                }
-                completions: {
-                    case_sensitive: false
-                    quick: true
-                    partial: true
-                    algorithm: "fuzzy"
-                }
-                cursor_shape: {
-                    vi_insert: line
-                    vi_normal: block
-                }
-            }
-            alias ls  = eza --icons
-            alias ll  = eza -la --icons
-            alias lt  = eza --tree --icons
-            alias cat = bat
-          '';
-          envFile.text = ''
-            zoxide init nushell | save -f ~/.zoxide.nu
-            $env.EDITOR = "nvim"
-          '';
-          loginFile.text = ''
-            source ~/.zoxide.nu
-          '';
-        };
-
         starship = {
           enable = true;
           enableFishIntegration = true;
-          enableZshIntegration = true;
-          enableNushellIntegration = true;
           settings = {
             format = "$directory$git_branch$git_status$cmd_duration$line_break$character";
             character = {
