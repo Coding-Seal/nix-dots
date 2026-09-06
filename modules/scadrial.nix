@@ -41,9 +41,19 @@
       }
 
       # Work laptop-specific settings — add proxy/etc once known.
-      {
-        networking.hostName = "scadrial";
-      }
+      (
+        { pkgs, ... }:
+        {
+          networking.hostName = "scadrial";
+
+          # Cisco AnyConnect VPN. openconnect speaks the AnyConnect SSL-VPN
+          # protocol; the NetworkManager plugin wires it into nm-applet /
+          # Noctalia's network widget. `openconnect` is also on PATH for
+          # command-line use (`sudo openconnect <host>`).
+          networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
+          environment.systemPackages = [ pkgs.openconnect ];
+        }
+      )
     ]
     ++ config.nixosModules;
   };
