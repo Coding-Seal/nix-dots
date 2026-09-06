@@ -55,6 +55,27 @@
             pkgs.openconnect
             pkgs.networkmanagerapplet # nm-connection-editor — GUI to author the VPN profile
           ];
+
+          # AnyConnect needs an interactive password (and often TOTP) on every
+          # connect, so NetworkManager has no stored secret to hand back — it
+          # can only get one by asking a running secrets agent. Noctalia's
+          # network widget doesn't implement that prompt itself, so without an
+          # agent running, activating the VPN fails with "no valid secrets"
+          # instead of asking for a password. nm-applet acts as that agent:
+          # NetworkManager calls it over D-Bus for any connection (from any
+          # frontend — nmcli, Noctalia, etc.) that needs interactive secrets.
+          # `--indicator` uses the StatusNotifierItem protocol so it also shows
+          # up in Noctalia's tray widget.
+          systemd.user.services.nm-applet = {
+            description = "NetworkManager applet (secrets agent for interactive VPN auth)";
+            after = [ "graphical-session.target" ];
+            partOf = [ "graphical-session.target" ];
+            wantedBy = [ "graphical-session.target" ];
+            serviceConfig = {
+              ExecStart = "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator";
+              Restart = "on-failure";
+            };
+          };
         }
       )
     ]
