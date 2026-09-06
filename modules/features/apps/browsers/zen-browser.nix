@@ -38,6 +38,14 @@
             "c01d3e22-1cee-45c1-a25e-53c0f180eea8" # Ghost Tabs
           ];
 
+          # Pin uBlock Origin and Bitwarden to the toolbar (ids from the NUR
+          # addon derivations' addonId). Merges into whatever layout Zen last
+          # saved — needs the profile to have launched Zen at least once.
+          extensionButtons."nav-bar" = [
+            "uBlock0@raymondhill.net"
+            "{446900e4-71c2-419f-a6a7-df9c091e268b}"
+          ];
+
           search = {
             force = true;
             default = "ddg";
