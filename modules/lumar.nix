@@ -57,6 +57,12 @@
           };
         };
         environment.systemPackages = [ pkgs.os-prober ];
+
+        # Windows keeps the hardware clock in local time; NixOS defaults to
+        # treating it as UTC. Without this, every boot into the other OS
+        # steps the RTC by the local UTC offset, which reads as the system
+        # clock "jumping" on whichever OS boots next.
+        time.hardwareClockInLocalTime = true;
       })
     ]
     ++ config.nixosModules;
