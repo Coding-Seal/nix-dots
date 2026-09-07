@@ -20,9 +20,10 @@ _: {
           enable = true;
           signing = {
             # TODO: replace with your real key fingerprint once generated/imported
-            # (gpg --list-secret-keys --keyid-format=long).
+            # (gpg --list-secret-keys --keyid-format=long), then flip
+            # signByDefault back to true.
             key = "REPLACE_WITH_GPG_KEY_ID";
-            signByDefault = true;
+            signByDefault = false;
           };
         };
       }
