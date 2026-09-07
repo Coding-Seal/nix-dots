@@ -8,6 +8,10 @@ _: {
     ({ pkgs, ... }: {
       programs.yazi = {
         enable = true;
+        # Adopt the new (>=26.05) wrapper name explicitly rather than
+        # falling back to the deprecated "yy" — home.stateVersion is
+        # pinned at 25.05 repo-wide and isn't bumped just for this.
+        shellWrapperName = "y";
 
         plugins = {
           # SMB/NFS/SFTP/FTP/etc. share browsing via gvfs+gio.
