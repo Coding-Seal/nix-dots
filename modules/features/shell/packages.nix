@@ -6,7 +6,6 @@
         (pkgs.callPackage ../../../pkgs/rtk.nix { })
         git
         gh
-        yazi
         ripgrep
         fd
         bat
@@ -30,6 +29,11 @@
 
       # nh needs to know which flake to operate on by default
       home.sessionVariables.NH_FLAKE = "/home/${config.username}/Projects/nix-dots";
+
+      # Managed via programs.yazi (not home.packages) so other modules can
+      # declare plugins/keymap against it — see network-shares.nix for the
+      # gvfs plugin that adds SMB browsing.
+      programs.yazi.enable = true;
 
       # Override yazi's desktop entry so launchers open it in a terminal
       xdg.desktopEntries.yazi = {
