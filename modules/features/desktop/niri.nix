@@ -7,7 +7,7 @@
       {
         options.terminal = lib.mkOption {
           type = lib.types.str;
-          default = "wezterm";
+          default = "ghostty";
         };
 
         config.v2-settings = true;
@@ -125,7 +125,7 @@
             "Mod+Shift+E".quit = _: { };
 
             "Mod+R".switch-preset-column-width = _: { };
-            "Mod+E".spawn-sh = "wezterm start -- yazi";
+            "Mod+E".spawn-sh = "ghostty -e yazi";
             "Mod+Comma".consume-window-into-column = _: { };
             "Mod+Period".expel-window-from-column = _: { };
           };

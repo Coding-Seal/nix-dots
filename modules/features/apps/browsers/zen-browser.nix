@@ -80,7 +80,13 @@
         };
       };
 
-      xdg.mimeApps.enable = true;
+      # setAsDefaultBrowser above covers HTML/HTTP(S)/etc., but not PDFs —
+      # add that mime type by hand so Zen (Firefox's built-in PDF.js) opens
+      # them instead of falling back to no default handler.
+      xdg.mimeApps = {
+        enable = true;
+        defaultApplications."application/pdf" = "zen-beta.desktop";
+      };
 
       # Stylix's zen-browser target has no way to discover profile names on its
       # own (unlike its firefox target) — it warns and no-ops without this.

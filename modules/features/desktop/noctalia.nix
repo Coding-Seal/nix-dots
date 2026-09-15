@@ -17,7 +17,7 @@
           # (modules/features/desktop/stylix.nix), which write nix-managed files
           # to the same paths (e.g. gtk-3.0/gtk.css) — enabling Noctalia's own
           # builtin templates for these would fight over them. Same story for
-          # wezterm (Stylix's wezterm target) and telegram (this repo builds
+          # ghostty (Stylix's ghostty target) and telegram (this repo builds
           # its own gruvbox theme for it, see communication/telegram.nix) —
           # theme.templates is left empty below on purpose.
           enable = true;

@@ -17,6 +17,11 @@
         base16Scheme = "${pkgs.base16-schemes}/share/themes/gruvbox-dark-medium.yaml";
         image = ../../../wallpaper/Szeth_Enters_The_Battle_by_Marie_Seeberger.jpg;
 
+        # Ghostty's Stylix target writes background-opacity from this
+        # instead of its own setting, unlike WezTerm which took opacity
+        # as a plain app setting.
+        opacity.terminal = 0.95;
+
         fonts = {
           monospace = {
             package = pkgs.nerd-fonts.fira-mono;

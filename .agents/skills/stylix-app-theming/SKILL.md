@@ -24,7 +24,7 @@ competing color scheme for a new app if a Stylix target exists for it.
 
 1. **Check if a Stylix target exists** for the app: look at
    `inputs.stylix` (`nix eval --impure --expr '(builtins.getFlake (toString ./.)).inputs.stylix.outPath'`
-   then browse `modules/` in that source, e.g. `modules/wezterm.nix`,
+   then browse `modules/` in that source, e.g. `modules/ghostty.nix`,
    `modules/firefox.nix`) or search the Stylix docs. If one exists, prefer
    `stylix.targets.<app>.enable` (often already true via `autoEnable`) over
    any app-native theme setting.
@@ -39,13 +39,17 @@ competing color scheme for a new app if a Stylix target exists for it.
      `inputs.zen-browser.homeModules.default`) to exist in the config — a bare
      `home.packages` install of the browser binary does **not** trigger it.
 
-3. **Structured settings vs. `extraConfig`**: for apps like WezTerm, once
-   *any* module (including a Stylix target) also sets
+3. **Structured settings vs. `extraConfig`**: for apps whose HM module offers
+   both a structured `programs.<app>.settings` and a raw `extraConfig`-style
+   escape hatch (WezTerm was the example here before this repo switched to
+   Ghostty), once *any* module (including a Stylix target) sets
    `programs.<app>.settings`, Home Manager stops inlining `extraConfig`
    directly and wraps it in a function instead — a self-contained
    `extraConfig` script (e.g. one ending in its own `return config`) silently
    becomes dead code with no error. Use `programs.<app>.settings` (structured
-   attrs) for anything Stylix also touches.
+   attrs) for anything Stylix also touches. Ghostty has no `extraConfig`
+   equivalent — everything is structured `settings` — so this trap doesn't
+   apply to it.
 
 4. **No Stylix target exists** (true today for Telegram, Zoom, and full
    CSS-level Chrome theming — Chrome only gets a lightweight
@@ -65,7 +69,7 @@ competing color scheme for a new app if a Stylix target exists for it.
    bundled Stylix "noctalia" target only wires the deprecated
    `programs.noctalia-shell` option and is a no-op here. Leave Noctalia's own
    `theme.templates.builtin_ids` / `community_ids` empty for anything Stylix
-   already targets (`gtk`, `qt`, `wezterm`, and the hand-rolled `telegram`
+   already targets (`gtk`, `qt`, `ghostty`, and the hand-rolled `telegram`
    case) — letting both engines write the same files causes them to fight.
 
 6. **Verify**: rebuild (see the `nixos-rebuild-check` skill) and visually

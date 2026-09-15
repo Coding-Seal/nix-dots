@@ -4,7 +4,7 @@
 
 Declarative NixOS configuration for a personal workstation. Everything is reproducible — rebuilding from scratch should produce the same system.
 
-**Stack**: Niri (Wayland WM) · Noctalia (desktop shell — panels, dock, notifications) · Stylix (system-wide app theming) · WezTerm · Neovim (LazyVim) · Zen Browser
+**Stack**: Niri (Wayland WM) · Noctalia (desktop shell — panels, dock, notifications) · Stylix (system-wide app theming) · Ghostty · Neovim (LazyVim) · Zen Browser
 
 **Hosts**: `taldain` (VM) · `lumar` (home laptop) · `scadrial` (work laptop, stub — hardware config pending)
 
@@ -86,7 +86,7 @@ modules/
         chrome.nix          # google-chrome (HM)
         zen-browser.nix     # zen-browser flake's programs.zen-browser module (HM) — themed via Stylix
       dev/
-        wezterm.nix         # wezterm (HM) — colors/fonts owned by Stylix's wezterm target
+        ghostty.nix         # ghostty (HM) — colors/fonts owned by Stylix's ghostty target
         zed.nix             # zed-editor (HM) — themed via Stylix's zed target
         claude-code.nix     # personalHmModules — see "Host-specific vs shared config" below
         herdr.nix           # from nixpkgs-unstable (not yet in pinned nixos-26.05)
@@ -237,7 +237,7 @@ App color theming flows from **Stylix**, not from Noctalia's own template engine
 
 Noctalia's palette is hand-derived from `config.lib.stylix.colors` in `modules/features/desktop/noctalia.nix` rather than picked independently — nixpkgs' bundled Stylix "noctalia" target is a complete no-op in this tree (it only wires the deprecated `programs.noctalia-shell`, not the real `programs.noctalia` from `inputs.noctalia.homeModules.default`).
 
-See the `stylix-app-theming` skill for the full checklist when adding a new themed app or debugging why colors aren't applying — target-activation gotchas (`profileNames`, zen-browser's HM module requirement), WezTerm's `extraConfig` trap, and the hand-rolled fallback pattern used for apps with no Stylix target (Telegram).
+See the `stylix-app-theming` skill for the full checklist when adding a new themed app or debugging why colors aren't applying — target-activation gotchas (`profileNames`, zen-browser's HM module requirement), the structured-settings-vs-`extraConfig` trap, and the hand-rolled fallback pattern used for apps with no Stylix target (Telegram).
 
 ---
 

@@ -112,7 +112,7 @@ _: {
       # Override yazi's desktop entry so launchers open it in a terminal
       xdg.desktopEntries.yazi = {
         name = "Yazi File Manager";
-        exec = "wezterm start -- yazi %f";
+        exec = "ghostty -e yazi %f";
         terminal = false;
         icon = "yazi";
         categories = [
