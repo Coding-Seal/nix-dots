@@ -16,6 +16,7 @@
         curl
         htop
         unzip
+        lnav
         wl-clipboard
         grim
         slurp
