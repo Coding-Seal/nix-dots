@@ -12,11 +12,18 @@
 
       # Timezone is set automatically via geoclue2 location lookup below.
       services.automatic-timezoned.enable = true;
-      i18n.defaultLocale = "en_US.UTF-8";
-      i18n.supportedLocales = [
-        "en_US.UTF-8/UTF-8"
-        "ru_RU.UTF-8/UTF-8"
-      ];
+      i18n = {
+        defaultLocale = "en_US.UTF-8";
+        # en_US's LC_TIME defaults to Sunday-first weeks; override just that
+        # category to en_GB so calendars (e.g. Noctalia's, which reads glibc's
+        # _NL_TIME_FIRST_WEEKDAY) start on Monday instead.
+        extraLocaleSettings.LC_TIME = "en_GB.UTF-8";
+        supportedLocales = [
+          "en_US.UTF-8/UTF-8"
+          "en_GB.UTF-8/UTF-8"
+          "ru_RU.UTF-8/UTF-8"
+        ];
+      };
       users.users.${config.username} = {
         isNormalUser = true;
         extraGroups = [

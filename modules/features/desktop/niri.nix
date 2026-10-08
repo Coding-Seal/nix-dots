@@ -135,24 +135,56 @@
             "Mod+Escape".spawn-sh = "noctalia msg session lock";
           };
 
+          # HDMI-A-1 (external, 2560x1440) is primary and positioned left of
+          # eDP-1 (laptop, 1920x1080), bottom-aligned so the shorter laptop
+          # panel's bottom edge lines up with the external monitor's bottom.
+          outputs = {
+            "HDMI-A-1" = {
+              position = _: {
+                props = {
+                  x = 0;
+                  y = 0;
+                };
+              };
+              focus-at-startup = _: { };
+            };
+            "eDP-1" = {
+              position = _: {
+                props = {
+                  x = 2560;
+                  y = 360;
+                };
+              };
+            };
+          };
+
           workspaces =
             let
-              s = {
+              onExternal = {
                 layout.gaps = 12;
+                open-on-output = "HDMI-A-1";
+              };
+              onLaptop = {
+                layout.gaps = 12;
+                open-on-output = "eDP-1";
               };
             in
             {
-              "w0" = s;
-              "w1" = s;
-              "w2" = s;
-              "w3" = s;
-              "w4" = s;
+              "w0" = onExternal;
+              "w1" = onExternal;
+              "w2" = onExternal;
+              "w3" = onLaptop;
+              "w4" = onLaptop;
             };
 
           window-rules = [
             {
               matches = [ { app-id = "^zoom$"; } ];
               open-floating = true;
+            }
+            {
+              matches = [ { app-id = "^zen-beta$"; } ];
+              open-on-workspace = "w1";
             }
           ];
 

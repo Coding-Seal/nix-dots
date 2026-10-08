@@ -87,8 +87,8 @@
           };
 
           # Ported from the live GUI-managed ~/.local/state/noctalia/settings.toml
-          # (config_version 12) so this becomes the declared baseline instead —
-          # Noctalia's own config/state layering (see
+          # so this becomes the declared baseline instead — Noctalia's own
+          # config/state layering (see
           # https://docs.noctalia.dev/noctalia/configuration/) means GUI edits
           # matching these values get deduplicated back out automatically.
           settings = {
@@ -100,9 +100,8 @@
               capsule_group = [ ];
               concave_edge_corners = false;
               end = [
-                "media"
+                "bar"
                 "tray"
-                "clipboard"
                 "notifications"
                 "network"
                 "bluetooth"
@@ -110,7 +109,6 @@
                 "brightness"
                 "battery"
                 "control-center"
-                "session"
               ];
               margin_ends = 0;
               start = [
@@ -125,6 +123,8 @@
               enabled = true;
               account.personal_google.type = "google";
             };
+
+            location.address = "Saint Petersburg, Russia";
 
             dock = {
               concave_edge_corners = false;
@@ -222,12 +222,13 @@
 
             nightlight.enabled = true;
 
-            plugins.enabled = [ "icefish/phone-connect" ];
+            plugins.enabled = [ "noctalia/bitwarden" ];
 
             shell = {
-              font_family = "JetBrainsMono Nerd Font Mono";
+              font_family = "FiraMono Nerd Font Mono";
               niri_overview_type_to_launch_enabled = true;
               password_style = "random";
+              polkit_agent = true;
               launcher.providers.session.global = true;
               screenshot.confirm_region = true;
             };
@@ -248,8 +249,16 @@
             # ../../../wallpaper) so the in-app picker's browsing pool sees new
             # files dropped into the repo's wallpaper/ folder without requiring
             # a rebuild first.
-            wallpaper.directory = "/home/${config.home.username}/Projects/nix-dots/wallpaper";
-            wallpaper.default.path = toString config.stylix.image;
+            wallpaper = {
+              directory = "/home/${config.home.username}/Projects/nix-dots/wallpaper";
+              default.path = toString config.stylix.image;
+              favorite = [
+                {
+                  path = "/home/${config.home.username}/Projects/nix-dots/wallpaper/Szeth_Enters_The_Battle_by_Marie_Seeberger.jpg";
+                  theme_mode = "auto";
+                }
+              ];
+            };
           };
         };
       }
