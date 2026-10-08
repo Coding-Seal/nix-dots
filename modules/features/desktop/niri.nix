@@ -85,6 +85,9 @@
             "Mod+Ctrl+J".set-window-height = "-5%";
             "Mod+Ctrl+K".set-window-height = "+5%";
 
+            "Mod+Ctrl+Shift+H".move-column-to-monitor-left = _: { };
+            "Mod+Ctrl+Shift+L".move-column-to-monitor-right = _: { };
+
             "Mod+1".focus-workspace = "w0";
             "Mod+2".focus-workspace = "w1";
             "Mod+3".focus-workspace = "w2";
@@ -125,9 +128,11 @@
             "Mod+Shift+E".quit = _: { };
 
             "Mod+R".switch-preset-column-width = _: { };
-            "Mod+E".spawn-sh = "ghostty -e yazi";
+            "Mod+M".maximize-window-to-edges = _: { };
             "Mod+Comma".consume-window-into-column = _: { };
             "Mod+Period".expel-window-from-column = _: { };
+
+            "Mod+Escape".spawn-sh = "noctalia msg session lock";
           };
 
           workspaces =
