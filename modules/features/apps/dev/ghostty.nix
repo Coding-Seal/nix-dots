@@ -14,6 +14,14 @@ _: {
           cursor-style = "bar";
           cursor-style-blink = true;
           confirm-close-surface = false;
+
+          # Shell integration (cursor/title/path) is on by default via
+          # shell-integration = detect, which auto-injects for fish. The ssh-*
+          # features default off: ssh-env rewrites TERM/COLORTERM for remote
+          # compatibility, ssh-terminfo auto-installs Ghostty's terminfo on
+          # remote hosts (via local infocmp + remote tic) to avoid "unknown
+          # terminal type" errors.
+          shell-integration-features = "ssh-env,ssh-terminfo";
         };
       };
     }
