@@ -16,12 +16,12 @@ _: {
           confirm-close-surface = false;
 
           # Shell integration (cursor/title/path) is on by default via
-          # shell-integration = detect, which auto-injects for fish. The ssh-*
-          # features default off: ssh-env rewrites TERM/COLORTERM for remote
-          # compatibility, ssh-terminfo auto-installs Ghostty's terminfo on
-          # remote hosts (via local infocmp + remote tic) to avoid "unknown
-          # terminal type" errors.
-          shell-integration-features = "ssh-env,ssh-terminfo";
+          # shell-integration = detect, which auto-injects for fish.
+          # ssh-env rewrites TERM/COLORTERM to xterm-256color on remote hosts
+          # for compatibility. ssh-terminfo is deliberately left off: it would
+          # install Ghostty's own terminfo remotely and keep TERM=xterm-ghostty
+          # there instead of falling back to xterm-256color.
+          shell-integration-features = "ssh-env,no-ssh-terminfo";
         };
       };
     }
