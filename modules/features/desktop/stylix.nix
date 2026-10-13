@@ -22,6 +22,14 @@
         # as a plain app setting.
         opacity.terminal = 0.95;
 
+        # Without this, GTK/Qt/niri each fall back to their own default
+        # cursor (theme and size can silently diverge between them).
+        cursor = {
+          name = "phinger-cursors-light";
+          package = pkgs.phinger-cursors;
+          size = 24;
+        };
+
         fonts = {
           monospace = {
             package = pkgs.nerd-fonts.fira-mono;

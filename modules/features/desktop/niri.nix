@@ -19,6 +19,13 @@
             QT_QPA_PLATFORMTHEME = "qt6ct";
           };
 
+          # Keep in sync with stylix.cursor in stylix.nix — otherwise niri's
+          # own compositor-drawn pointer can differ from what GTK/Qt render.
+          cursor = {
+            xcursor-theme = "phinger-cursors-light";
+            xcursor-size = 24;
+          };
+
           input = {
             keyboard = {
               xkb = {
