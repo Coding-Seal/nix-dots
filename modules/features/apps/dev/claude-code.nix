@@ -1,7 +1,5 @@
 _: {
-  # Personal dev tool — opted into via personalHmModules, so it's absent on
-  # the work laptop (scadrial) without any per-host conditional.
-  config.personalHmModules = [
+  config.hmModules = [
     ({ pkgs, ... }: {
       home.packages = with pkgs; [
         claude-code
