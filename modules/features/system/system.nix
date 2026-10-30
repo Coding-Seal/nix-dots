@@ -10,8 +10,10 @@
         systemd-boot.enable = lib.mkDefault true;
       };
 
-      # Timezone is set automatically via geoclue2 location lookup below.
-      services.automatic-timezoned.enable = true;
+      # Saint Petersburg (MSK, UTC+3). mkDefault so a host config can override.
+      # Note: this is deliberately static rather than services.automatic-timezoned
+      # — that module forces time.timeZone = null, so the two can't coexist.
+      time.timeZone = lib.mkDefault "Europe/Moscow";
       i18n = {
         defaultLocale = "en_US.UTF-8";
         # en_US's LC_TIME defaults to Sunday-first weeks; override just that

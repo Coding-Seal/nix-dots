@@ -14,6 +14,7 @@ _: {
           cursor-style = "bar";
           cursor-style-blink = true;
           confirm-close-surface = false;
+          term = "xterm-256color";
 
           # Shell integration (cursor/title/path) is on by default via
           # shell-integration = detect, which auto-injects for fish.
